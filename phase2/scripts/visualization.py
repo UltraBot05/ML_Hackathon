@@ -174,6 +174,7 @@ class Phase2Visualizer:
         reconstructed_routes: Dict[str, List[int]],
         road_graph: RoadNetworkGraph,
         output_filename: str = "interactive_map_matching.html",
+        tiles: Optional[str] = "CartoDB positron",
     ) -> Path:
         """
         Creates a high-performance interactive Folium map with togglable layers:
@@ -186,7 +187,37 @@ class Phase2Visualizer:
         center_lat = road_graph.center_lat
         center_lon = road_graph.center_lon
 
-        fmap = folium.Map(location=[center_lat, center_lon], zoom_start=13, tiles="OpenStreetMap")
+        if tiles and str(tiles).lower() in ("cartodb positron", "cartodbpositron", "default"):
+            fmap = folium.Map(location=[center_lat, center_lon], zoom_start=13, tiles=None)
+            folium.TileLayer(
+                tiles="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                name="CartoDB Positron (Clean Default)",
+                subdomains="abcd",
+                max_zoom=19,
+                control=True,
+                overlay=False,
+            ).add_to(fmap)
+            folium.TileLayer(
+                tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+                attr="Tiles &copy; Esri",
+                name="Esri WorldStreetMap",
+                max_zoom=19,
+                control=True,
+                overlay=False,
+            ).add_to(fmap)
+            folium.TileLayer(
+                tiles="https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                name="OpenStreetMap",
+                max_zoom=19,
+                control=True,
+                overlay=False,
+            ).add_to(fmap)
+        elif tiles and str(tiles).lower() != "none":
+            fmap = folium.Map(location=[center_lat, center_lon], zoom_start=13, tiles=tiles)
+        else:
+            fmap = folium.Map(location=[center_lat, center_lon], zoom_start=13, tiles=None)
 
         # Layer 1: Raw GPS observations
         gps_fg = folium.FeatureGroup(name="Raw GPS Observations (Blue)", show=True)
