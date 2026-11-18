@@ -1,0 +1,22 @@
+{
+  "name": "xgboost",
+  "config": {
+    "transition": "legacy",
+    "emission": "ml",
+    "stationary": false,
+    "heading": 0.0,
+    "beta": 40.0,
+    "geometry_weight": 0.65,
+    "temperature": 1.0,
+    "sigma": 6.0
+  },
+  "model": "xgboost",
+  "temperature": 0.75,
+  "calibration_trip": "00000012",
+  "development_trips": [
+    "00000002",
+    "00000003",
+    "00000033"
+  ],
+  "dataset": "omen-phase2-route-first-v1"
+}

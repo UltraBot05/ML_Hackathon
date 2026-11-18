@@ -1,0 +1,1028 @@
+{
+  "dataset_version": "omen-phase2-route-first-v1",
+  "validation_trips": [
+    "00000084",
+    "00000001",
+    "00000005",
+    "00000013",
+    "00000016",
+    "00000024",
+    "00000028",
+    "00000035",
+    "00000037",
+    "00000038",
+    "00000041",
+    "00000043",
+    "00000055",
+    "00000061",
+    "00000085",
+    "00000088"
+  ],
+  "observations_total": 39460,
+  "geometry_hmm_legacy": {
+    "summary": {
+      "correct": 33707,
+      "observations": 39460,
+      "covered": 39166,
+      "micro_coverage_top1_pct": 85.4206791687785,
+      "micro_conditional_top1_pct": 86.061890415156,
+      "macro_coverage_top1_pct": 83.67257015051267,
+      "macro_conditional_top1_pct": 84.2722093984668,
+      "macro_raw_continuity_pct": 89.655,
+      "macro_bridged_continuity_pct": 99.168125,
+      "macro_route_f1": 0.8876625,
+      "macro_route_jaccard": 0.8077375,
+      "worst_coverage_trip": "00000016",
+      "worst_coverage_pct": 48.65900383141762
+    },
+    "per_trip": {
+      "00000084": {
+        "correct": 13933,
+        "observations": 16031,
+        "covered": 15993,
+        "coverage_top1_pct": 86.91285634083962,
+        "conditional_top1_pct": 87.11936472206591,
+        "raw_continuity_pct": 93.2,
+        "bridged_continuity_pct": 99.31,
+        "bridged_connected_transitions": 1003,
+        "bridged_transitions": 1010,
+        "route_f1": 0.8778,
+        "route_jaccard": 0.7822
+      },
+      "00000001": {
+        "correct": 1195,
+        "observations": 1315,
+        "covered": 1313,
+        "coverage_top1_pct": 90.8745247148289,
+        "conditional_top1_pct": 91.012947448591,
+        "raw_continuity_pct": 88.35,
+        "bridged_continuity_pct": 99.83,
+        "bridged_connected_transitions": 572,
+        "bridged_transitions": 573,
+        "route_f1": 0.9342,
+        "route_jaccard": 0.8765
+      },
+      "00000005": {
+        "correct": 1001,
+        "observations": 1045,
+        "covered": 1045,
+        "coverage_top1_pct": 95.78947368421052,
+        "conditional_top1_pct": 95.78947368421052,
+        "raw_continuity_pct": 99.05,
+        "bridged_continuity_pct": 100.0,
+        "bridged_connected_transitions": 106,
+        "bridged_transitions": 106,
+        "route_f1": 0.9811,
+        "route_jaccard": 0.963
+      },
+      "00000013": {
+        "correct": 2426,
+        "observations": 2580,
+        "covered": 2580,
+        "coverage_top1_pct": 94.03100775193798,
+        "conditional_top1_pct": 94.03100775193798,
+        "raw_continuity_pct": 92.88,
+        "bridged_continuity_pct": 99.87,
+        "bridged_connected_transitions": 798,
+        "bridged_transitions": 799,
+        "route_f1": 0.9836,
+        "route_jaccard": 0.9677
+      },
+      "00000016": {
+        "correct": 635,
+        "observations": 1305,
+        "covered": 1294,
+        "coverage_top1_pct": 48.65900383141762,
+        "conditional_top1_pct": 49.07264296754251,
+        "raw_continuity_pct": 87.66,
+        "bridged_continuity_pct": 99.29,
+        "bridged_connected_transitions": 279,
+        "bridged_transitions": 281,
+        "route_f1": 0.7414,
+        "route_jaccard": 0.5891
+      },
+      "00000024": {
+        "correct": 761,
+        "observations": 801,
+        "covered": 801,
+        "coverage_top1_pct": 95.00624219725343,
+        "conditional_top1_pct": 95.00624219725343,
+        "raw_continuity_pct": 98.78,
+        "bridged_continuity_pct": 100.0,
+        "bridged_connected_transitions": 249,
+        "bridged_transitions": 249,
+        "route_f1": 0.994,
+        "route_jaccard": 0.988
+      },
+      "00000028": {
+        "correct": 3316,
+        "observations": 3565,
+        "covered": 3544,
+        "coverage_top1_pct": 93.01542776998598,
+        "conditional_top1_pct": 93.5665914221219,
+        "raw_continuity_pct": 92.2,
+        "bridged_continuity_pct": 99.0,
+        "bridged_connected_transitions": 694,
+        "bridged_transitions": 701,
+        "route_f1": 0.8894,
+        "route_jaccard": 0.8008
+      },
+      "00000035": {
+        "correct": 1319,
+        "observations": 1643,
+        "covered": 1641,
+        "coverage_top1_pct": 80.27997565429094,
+        "conditional_top1_pct": 80.37781840341255,
+        "raw_continuity_pct": 87.64,
+        "bridged_continuity_pct": 98.25,
+        "bridged_connected_transitions": 504,
+        "bridged_transitions": 513,
+        "route_f1": 0.92,
+        "route_jaccard": 0.8519
+      },
+      "00000037": {
+        "correct": 599,
+        "observations": 677,
+        "covered": 677,
+        "coverage_top1_pct": 88.47858197932054,
+        "conditional_top1_pct": 88.47858197932054,
+        "raw_continuity_pct": 89.95,
+        "bridged_continuity_pct": 100.0,
+        "bridged_connected_transitions": 220,
+        "bridged_transitions": 220,
+        "route_f1": 0.8859,
+        "route_jaccard": 0.7951
+      },
+      "00000038": {
+        "correct": 1121,
+        "observations": 1287,
+        "covered": 1287,
+        "coverage_top1_pct": 87.1017871017871,
+        "conditional_top1_pct": 87.1017871017871,
+        "raw_continuity_pct": 89.51,
+        "bridged_continuity_pct": 100.0,
+        "bridged_connected_transitions": 339,
+        "bridged_transitions": 339,
+        "route_f1": 0.8527,
+        "route_jaccard": 0.7432
+      },
+      "00000041": {
+        "correct": 881,
+        "observations": 1019,
+        "covered": 1018,
+        "coverage_top1_pct": 86.45731108930323,
+        "conditional_top1_pct": 86.54223968565816,
+        "raw_continuity_pct": 86.75,
+        "bridged_continuity_pct": 99.75,
+        "bridged_connected_transitions": 392,
+        "bridged_transitions": 393,
+        "route_f1": 0.9484,
+        "route_jaccard": 0.9019
+      },
+      "00000043": {
+        "correct": 1675,
+        "observations": 2322,
+        "covered": 2181,
+        "coverage_top1_pct": 72.13608957795005,
+        "conditional_top1_pct": 76.79963319578175,
+        "raw_continuity_pct": 81.55,
+        "bridged_continuity_pct": 92.66,
+        "bridged_connected_transitions": 581,
+        "bridged_transitions": 627,
+        "route_f1": 0.7415,
+        "route_jaccard": 0.5892
+      },
+      "00000055": {
+        "correct": 2378,
+        "observations": 2472,
+        "covered": 2472,
+        "coverage_top1_pct": 96.19741100323624,
+        "conditional_top1_pct": 96.19741100323624,
+        "raw_continuity_pct": 97.22,
+        "bridged_continuity_pct": 100.0,
+        "bridged_connected_transitions": 486,
+        "bridged_transitions": 486,
+        "route_f1": 0.9751,
+        "route_jaccard": 0.9513
+      },
+      "00000061": {
+        "correct": 827,
+        "observations": 1430,
+        "covered": 1355,
+        "coverage_top1_pct": 57.83216783216783,
+        "conditional_top1_pct": 61.03321033210332,
+        "raw_continuity_pct": 69.24,
+        "bridged_continuity_pct": 98.73,
+        "bridged_connected_transitions": 853,
+        "bridged_transitions": 864,
+        "route_f1": 0.753,
+        "route_jaccard": 0.6039
+      },
+      "00000085": {
+        "correct": 940,
+        "observations": 1092,
+        "covered": 1089,
+        "coverage_top1_pct": 86.08058608058609,
+        "conditional_top1_pct": 86.31772268135904,
+        "raw_continuity_pct": 92.59,
+        "bridged_continuity_pct": 100.0,
+        "bridged_connected_transitions": 233,
+        "bridged_transitions": 233,
+        "route_f1": 0.9013,
+        "route_jaccard": 0.8204
+      },
+      "00000088": {
+        "correct": 700,
+        "observations": 876,
+        "covered": 876,
+        "coverage_top1_pct": 79.90867579908675,
+        "conditional_top1_pct": 79.90867579908675,
+        "raw_continuity_pct": 87.91,
+        "bridged_continuity_pct": 100.0,
+        "bridged_connected_transitions": 247,
+        "bridged_transitions": 247,
+        "route_f1": 0.8232,
+        "route_jaccard": 0.6996
+      }
+    }
+  },
+  "geometry_hmm_route_first": {
+    "summary": {
+      "correct": 34091,
+      "observations": 39460,
+      "covered": 39079,
+      "micro_coverage_top1_pct": 86.39381652306133,
+      "micro_conditional_top1_pct": 87.23611146651655,
+      "macro_coverage_top1_pct": 84.67183609157863,
+      "macro_conditional_top1_pct": 85.45073111735304,
+      "macro_raw_continuity_pct": 89.655,
+      "macro_bridged_continuity_pct": 99.168125,
+      "macro_route_f1": 0.8876625,
+      "macro_route_jaccard": 0.8077375,
+      "worst_coverage_trip": "00000016",
+      "worst_coverage_pct": 53.486590038314176
+    },
+    "per_trip": {
+      "00000084": {
+        "correct": 14143,
+        "observations": 16031,
+        "covered": 15953,
+        "coverage_top1_pct": 88.22281828956397,
+        "conditional_top1_pct": 88.65417162916066,
+        "raw_continuity_pct": 93.2,
+        "bridged_continuity_pct": 99.31,
+        "bridged_connected_transitions": 1003,
+        "bridged_transitions": 1010,
+        "route_f1": 0.8778,
+        "route_jaccard": 0.7822
+      },
+      "00000001": {
+        "correct": 1198,
+        "observations": 1315,
+        "covered": 1313,
+        "coverage_top1_pct": 91.10266159695817,
+        "conditional_top1_pct": 91.24143183549124,
+        "raw_continuity_pct": 88.35,
+        "bridged_continuity_pct": 99.83,
+        "bridged_connected_transitions": 572,
+        "bridged_transitions": 573,
+        "route_f1": 0.9342,
+        "route_jaccard": 0.8765
+      },
+      "00000005": {
+        "correct": 1001,
+        "observations": 1045,
+        "covered": 1045,
+        "coverage_top1_pct": 95.78947368421052,
+        "conditional_top1_pct": 95.78947368421052,
+        "raw_continuity_pct": 99.05,
+        "bridged_continuity_pct": 100.0,
+        "bridged_connected_transitions": 106,
+        "bridged_transitions": 106,
+        "route_f1": 0.9811,
+        "route_jaccard": 0.963
+      },
+      "00000013": {
+        "correct": 2420,
+        "observations": 2580,
+        "covered": 2580,
+        "coverage_top1_pct": 93.7984496124031,
+        "conditional_top1_pct": 93.7984496124031,
+        "raw_continuity_pct": 92.88,
+        "bridged_continuity_pct": 99.87,
+        "bridged_connected_transitions": 798,
+        "bridged_transitions": 799,
+        "route_f1": 0.9836,
+        "route_jaccard": 0.9677
+      },
+      "00000016": {
+        "correct": 698,
+        "observations": 1305,
+        "covered": 1293,
+        "coverage_top1_pct": 53.486590038314176,
+        "conditional_top1_pct": 53.982985305491106,
+        "raw_continuity_pct": 87.66,
+        "bridged_continuity_pct": 99.29,
+        "bridged_connected_transitions": 279,
+        "bridged_transitions": 281,
+        "route_f1": 0.7414,
+        "route_jaccard": 0.5891
+      },
+      "00000024": {
+        "correct": 761,
+        "observations": 801,
+        "covered": 801,
+        "coverage_top1_pct": 95.00624219725343,
+        "conditional_top1_pct": 95.00624219725343,
+        "raw_continuity_pct": 98.78,
+        "bridged_continuity_pct": 100.0,
+        "bridged_connected_transitions": 249,
+        "bridged_transitions": 249,
+        "route_f1": 0.994,
+        "route_jaccard": 0.988
+      },
+      "00000028": {
+        "correct": 3313,
+        "observations": 3565,
+        "covered": 3544,
+        "coverage_top1_pct": 92.9312762973352,
+        "conditional_top1_pct": 93.48194130925508,
+        "raw_continuity_pct": 92.2,
+        "bridged_continuity_pct": 99.0,
+        "bridged_connected_transitions": 694,
+        "bridged_transitions": 701,
+        "route_f1": 0.8894,
+        "route_jaccard": 0.8008
+      },
+      "00000035": {
+        "correct": 1323,
+        "observations": 1643,
+        "covered": 1640,
+        "coverage_top1_pct": 80.52343274497869,
+        "conditional_top1_pct": 80.67073170731707,
+        "raw_continuity_pct": 87.64,
+        "bridged_continuity_pct": 98.25,
+        "bridged_connected_transitions": 504,
+        "bridged_transitions": 513,
+        "route_f1": 0.92,
+        "route_jaccard": 0.8519
+      },
+      "00000037": {
+        "correct": 602,
+        "observations": 677,
+        "covered": 677,
+        "coverage_top1_pct": 88.92171344165436,
+        "conditional_top1_pct": 88.92171344165436,
+        "raw_continuity_pct": 89.95,
+        "bridged_continuity_pct": 100.0,
+        "bridged_connected_transitions": 220,
+        "bridged_transitions": 220,
+        "route_f1": 0.8859,
+        "route_jaccard": 0.7951
+      },
+      "00000038": {
+        "correct": 1122,
+        "observations": 1287,
+        "covered": 1287,
+        "coverage_top1_pct": 87.17948717948718,
+        "conditional_top1_pct": 87.17948717948718,
+        "raw_continuity_pct": 89.51,
+        "bridged_continuity_pct": 100.0,
+        "bridged_connected_transitions": 339,
+        "bridged_transitions": 339,
+        "route_f1": 0.8527,
+        "route_jaccard": 0.7432
+      },
+      "00000041": {
+        "correct": 878,
+        "observations": 1019,
+        "covered": 1018,
+        "coverage_top1_pct": 86.16290480863591,
+        "conditional_top1_pct": 86.2475442043222,
+        "raw_continuity_pct": 86.75,
+        "bridged_continuity_pct": 99.75,
+        "bridged_connected_transitions": 392,
+        "bridged_transitions": 393,
+        "route_f1": 0.9484,
+        "route_jaccard": 0.9019
+      },
+      "00000043": {
+        "correct": 1668,
+        "observations": 2322,
+        "covered": 2180,
+        "coverage_top1_pct": 71.83462532299741,
+        "conditional_top1_pct": 76.5137614678899,
+        "raw_continuity_pct": 81.55,
+        "bridged_continuity_pct": 92.66,
+        "bridged_connected_transitions": 581,
+        "bridged_transitions": 627,
+        "route_f1": 0.7415,
+        "route_jaccard": 0.5892
+      },
+      "00000055": {
+        "correct": 2384,
+        "observations": 2472,
+        "covered": 2472,
+        "coverage_top1_pct": 96.44012944983818,
+        "conditional_top1_pct": 96.44012944983818,
+        "raw_continuity_pct": 97.22,
+        "bridged_continuity_pct": 100.0,
+        "bridged_connected_transitions": 486,
+        "bridged_transitions": 486,
+        "route_f1": 0.9751,
+        "route_jaccard": 0.9513
+      },
+      "00000061": {
+        "correct": 892,
+        "observations": 1430,
+        "covered": 1312,
+        "coverage_top1_pct": 62.37762237762238,
+        "conditional_top1_pct": 67.98780487804878,
+        "raw_continuity_pct": 69.24,
+        "bridged_continuity_pct": 98.73,
+        "bridged_connected_transitions": 853,
+        "bridged_transitions": 864,
+        "route_f1": 0.753,
+        "route_jaccard": 0.6039
+      },
+      "00000085": {
+        "correct": 962,
+        "observations": 1092,
+        "covered": 1088,
+        "coverage_top1_pct": 88.0952380952381,
+        "conditional_top1_pct": 88.41911764705883,
+        "raw_continuity_pct": 92.59,
+        "bridged_continuity_pct": 100.0,
+        "bridged_connected_transitions": 233,
+        "bridged_transitions": 233,
+        "route_f1": 0.9013,
+        "route_jaccard": 0.8204
+      },
+      "00000088": {
+        "correct": 726,
+        "observations": 876,
+        "covered": 876,
+        "coverage_top1_pct": 82.87671232876713,
+        "conditional_top1_pct": 82.87671232876713,
+        "raw_continuity_pct": 87.91,
+        "bridged_continuity_pct": 100.0,
+        "bridged_connected_transitions": 247,
+        "bridged_transitions": 247,
+        "route_f1": 0.8232,
+        "route_jaccard": 0.6996
+      }
+    }
+  },
+  "trip_00000084_diagnosis": {
+    "observations": 16031,
+    "sampling_dt_s_excluding_first": {
+      "p25": 1.0,
+      "p50": 1.0,
+      "p75": 1.0,
+      "p90": 1.0
+    },
+    "gaps_gt_30_s": 4,
+    "one_step_gps_speed_mps": {
+      "p25": 5.058,
+      "p50": 7.932,
+      "p75": 11.2405,
+      "p90": 14.617
+    },
+    "gap_aware_window_gps_net_speed_mps": {
+      "p25": 2.051583901543063,
+      "p50": 4.149651296293437,
+      "p75": 5.744816921525432,
+      "p90": 7.165892316497075
+    },
+    "window_lt_0_8_mps_one_step_gps_speed_mps": {
+      "p25": 4.309,
+      "p50": 6.942,
+      "p75": 10.045,
+      "p90": 12.686
+    },
+    "window_lt_0_8_mps_one_step_displacement_m": {
+      "p25": 4.339,
+      "p50": 6.972,
+      "p75": 10.056,
+      "p90": 12.7948
+    },
+    "window_lt_0_8_mps_net_over_raw_gps_path": {
+      "p25": 0.05171275705142385,
+      "p50": 0.07370150189922994,
+      "p75": 0.10013529421515503,
+      "p90": 0.1268358416367782
+    },
+    "opposite_pair_is_swapped_graph_endpoints": true,
+    "interpretation": "Observation labels and low-motion classifications are GPS-derived proxies. Opposite-arc switches are graph events; neither they nor negative projections establish a physical U-turn.",
+    "score_breakdowns": {
+      "original_phase2_geometry_hmm": {
+        "all": {
+          "observations": 16031,
+          "retrieval_miss": 78,
+          "exact": 14143,
+          "exact_opposite_endpoints": 792,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 323,
+          "other_arc_off_reference_route": 695
+        },
+        "step_stationary": {
+          "observations": 671,
+          "retrieval_miss": 8,
+          "exact": 579,
+          "exact_opposite_endpoints": 41,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 9,
+          "other_arc_off_reference_route": 34
+        },
+        "window_speed_lt_0_8_mps": {
+          "observations": 1089,
+          "retrieval_miss": 7,
+          "exact": 801,
+          "exact_opposite_endpoints": 146,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 14,
+          "other_arc_off_reference_route": 121
+        },
+        "window_speed_lt_0_8_mps_and_step_ge_2_m": {
+          "observations": 1020,
+          "retrieval_miss": 6,
+          "exact": 753,
+          "exact_opposite_endpoints": 134,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 13,
+          "other_arc_off_reference_route": 114
+        },
+        "window_speed_lt_0_8_mps_and_net_path_ratio_lt_0_35": {
+          "observations": 1089,
+          "retrieval_miss": 7,
+          "exact": 801,
+          "exact_opposite_endpoints": 146,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 14,
+          "other_arc_off_reference_route": 121
+        },
+        "window_speed_ge_3_mps": {
+          "observations": 10327,
+          "retrieval_miss": 15,
+          "exact": 9782,
+          "exact_opposite_endpoints": 136,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 249,
+          "other_arc_off_reference_route": 145
+        },
+        "geometric_near_tie": {
+          "observations": 3287,
+          "retrieval_miss": 39,
+          "exact": 1906,
+          "exact_opposite_endpoints": 542,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 281,
+          "other_arc_off_reference_route": 519
+        },
+        "no_geometric_near_tie": {
+          "observations": 12744,
+          "retrieval_miss": 39,
+          "exact": 12237,
+          "exact_opposite_endpoints": 250,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 42,
+          "other_arc_off_reference_route": 176
+        }
+      },
+      "aadi_catboost_hmm": {
+        "all": {
+          "observations": 16031,
+          "retrieval_miss": 78,
+          "exact": 12339,
+          "exact_opposite_endpoints": 2682,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 192,
+          "other_arc_off_reference_route": 740
+        },
+        "step_stationary": {
+          "observations": 671,
+          "retrieval_miss": 8,
+          "exact": 482,
+          "exact_opposite_endpoints": 139,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 7,
+          "other_arc_off_reference_route": 35
+        },
+        "window_speed_lt_0_8_mps": {
+          "observations": 1089,
+          "retrieval_miss": 7,
+          "exact": 513,
+          "exact_opposite_endpoints": 429,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 20,
+          "other_arc_off_reference_route": 120
+        },
+        "window_speed_lt_0_8_mps_and_step_ge_2_m": {
+          "observations": 1020,
+          "retrieval_miss": 6,
+          "exact": 479,
+          "exact_opposite_endpoints": 402,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 20,
+          "other_arc_off_reference_route": 113
+        },
+        "window_speed_lt_0_8_mps_and_net_path_ratio_lt_0_35": {
+          "observations": 1089,
+          "retrieval_miss": 7,
+          "exact": 513,
+          "exact_opposite_endpoints": 429,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 20,
+          "other_arc_off_reference_route": 120
+        },
+        "window_speed_ge_3_mps": {
+          "observations": 10327,
+          "retrieval_miss": 15,
+          "exact": 9375,
+          "exact_opposite_endpoints": 672,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 86,
+          "other_arc_off_reference_route": 179
+        },
+        "geometric_near_tie": {
+          "observations": 3287,
+          "retrieval_miss": 39,
+          "exact": 2235,
+          "exact_opposite_endpoints": 310,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 155,
+          "other_arc_off_reference_route": 548
+        },
+        "no_geometric_near_tie": {
+          "observations": 12744,
+          "retrieval_miss": 39,
+          "exact": 10104,
+          "exact_opposite_endpoints": 2372,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 37,
+          "other_arc_off_reference_route": 192
+        }
+      },
+      "aadi_extra_trees_hmm": {
+        "all": {
+          "observations": 16031,
+          "retrieval_miss": 78,
+          "exact": 11985,
+          "exact_opposite_endpoints": 3028,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 194,
+          "other_arc_off_reference_route": 746
+        },
+        "step_stationary": {
+          "observations": 671,
+          "retrieval_miss": 8,
+          "exact": 467,
+          "exact_opposite_endpoints": 152,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 7,
+          "other_arc_off_reference_route": 37
+        },
+        "window_speed_lt_0_8_mps": {
+          "observations": 1089,
+          "retrieval_miss": 7,
+          "exact": 446,
+          "exact_opposite_endpoints": 498,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 18,
+          "other_arc_off_reference_route": 120
+        },
+        "window_speed_lt_0_8_mps_and_step_ge_2_m": {
+          "observations": 1020,
+          "retrieval_miss": 6,
+          "exact": 421,
+          "exact_opposite_endpoints": 463,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 18,
+          "other_arc_off_reference_route": 112
+        },
+        "window_speed_lt_0_8_mps_and_net_path_ratio_lt_0_35": {
+          "observations": 1089,
+          "retrieval_miss": 7,
+          "exact": 446,
+          "exact_opposite_endpoints": 498,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 18,
+          "other_arc_off_reference_route": 120
+        },
+        "window_speed_ge_3_mps": {
+          "observations": 10327,
+          "retrieval_miss": 15,
+          "exact": 9291,
+          "exact_opposite_endpoints": 744,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 92,
+          "other_arc_off_reference_route": 185
+        },
+        "geometric_near_tie": {
+          "observations": 3287,
+          "retrieval_miss": 39,
+          "exact": 1937,
+          "exact_opposite_endpoints": 600,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 163,
+          "other_arc_off_reference_route": 548
+        },
+        "no_geometric_near_tie": {
+          "observations": 12744,
+          "retrieval_miss": 39,
+          "exact": 10048,
+          "exact_opposite_endpoints": 2428,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 31,
+          "other_arc_off_reference_route": 198
+        }
+      },
+      "omen_frozen_xgboost_hmm": {
+        "all": {
+          "observations": 16031,
+          "retrieval_miss": 78,
+          "exact": 9176,
+          "exact_opposite_endpoints": 5852,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 201,
+          "other_arc_off_reference_route": 724
+        },
+        "step_stationary": {
+          "observations": 671,
+          "retrieval_miss": 8,
+          "exact": 336,
+          "exact_opposite_endpoints": 282,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 6,
+          "other_arc_off_reference_route": 39
+        },
+        "window_speed_lt_0_8_mps": {
+          "observations": 1089,
+          "retrieval_miss": 7,
+          "exact": 431,
+          "exact_opposite_endpoints": 516,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 22,
+          "other_arc_off_reference_route": 113
+        },
+        "window_speed_lt_0_8_mps_and_step_ge_2_m": {
+          "observations": 1020,
+          "retrieval_miss": 6,
+          "exact": 402,
+          "exact_opposite_endpoints": 484,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 22,
+          "other_arc_off_reference_route": 106
+        },
+        "window_speed_lt_0_8_mps_and_net_path_ratio_lt_0_35": {
+          "observations": 1089,
+          "retrieval_miss": 7,
+          "exact": 431,
+          "exact_opposite_endpoints": 516,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 22,
+          "other_arc_off_reference_route": 113
+        },
+        "window_speed_ge_3_mps": {
+          "observations": 10327,
+          "retrieval_miss": 15,
+          "exact": 6786,
+          "exact_opposite_endpoints": 3251,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 96,
+          "other_arc_off_reference_route": 179
+        },
+        "geometric_near_tie": {
+          "observations": 3287,
+          "retrieval_miss": 39,
+          "exact": 1836,
+          "exact_opposite_endpoints": 706,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 159,
+          "other_arc_off_reference_route": 547
+        },
+        "no_geometric_near_tie": {
+          "observations": 12744,
+          "retrieval_miss": 39,
+          "exact": 7340,
+          "exact_opposite_endpoints": 5146,
+          "same_direction_duplicate": 0,
+          "other_arc_on_reference_route": 42,
+          "other_arc_off_reference_route": 177
+        }
+      }
+    },
+    "directed_transitions": {
+      "route_first_proxy": {
+        "pairs_with_known_arcs_and_gap_at_most_30_s": 16026,
+        "changed_arc_pairs": 605,
+        "legacy_infinite_or_beyond_cutoff": 0,
+        "legacy_changed_finite_residual_m": {
+          "p25": 21.375,
+          "p50": 40.58500000000001,
+          "p75": 105.52,
+          "p90": 203.9784
+        },
+        "projection_aware_changed_finite_residual_m": {
+          "p25": 0.2695731064339597,
+          "p50": 0.9593274930769518,
+          "p75": 2.384646799206797,
+          "p90": 5.2222857765185555
+        },
+        "legacy_finite_residual_gt_50_m": 264,
+        "projection_aware_changed_finite_residual_gt_50_m": 3,
+        "same_arc_backward_projection_over_1m": 3760,
+        "exact_opposite_arc_switches": 5,
+        "opposite_switches_at_window_speed_lt_0_8_mps": 0,
+        "opposite_switches_at_window_speed_ge_3_mps": 1,
+        "opposite_switches_matching_route_first_proxy_pair": 5,
+        "opposite_switch_legacy_residual_m": {
+          "p25": 111.949,
+          "p50": 205.33100000000002,
+          "p75": 221.955,
+          "p90": 235.029
+        },
+        "opposite_switch_projection_aware_residual_m": {
+          "p25": 8.7,
+          "p50": 236.45125567896557,
+          "p75": 245.8526558855545,
+          "p90": 315.5474018960666
+        }
+      },
+      "original_phase2_geometry_hmm": {
+        "pairs_with_known_arcs_and_gap_at_most_30_s": 16026,
+        "changed_arc_pairs": 941,
+        "legacy_infinite_or_beyond_cutoff": 3,
+        "legacy_changed_finite_residual_m": {
+          "p25": 6.6692586796843205,
+          "p50": 26.1585,
+          "p75": 71.44675,
+          "p90": 171.98380000000003
+        },
+        "projection_aware_changed_finite_residual_m": {
+          "p25": 0.6666245291300461,
+          "p50": 2.3958888818489052,
+          "p75": 8.627302677219989,
+          "p90": 19.30787471408802
+        },
+        "legacy_finite_residual_gt_50_m": 305,
+        "projection_aware_changed_finite_residual_gt_50_m": 35,
+        "same_arc_backward_projection_over_1m": 3765,
+        "exact_opposite_arc_switches": 241,
+        "opposite_switches_at_window_speed_lt_0_8_mps": 23,
+        "opposite_switches_at_window_speed_ge_3_mps": 122,
+        "opposite_switches_matching_route_first_proxy_pair": 0,
+        "opposite_switch_legacy_residual_m": {
+          "p25": 3.25,
+          "p50": 6.674,
+          "p75": 12.957,
+          "p90": 38.322
+        },
+        "opposite_switch_projection_aware_residual_m": {
+          "p25": 4.1786737541206715,
+          "p50": 10.274690660653285,
+          "p75": 19.288886138278013,
+          "p90": 71.01426268582313
+        }
+      },
+      "aadi_catboost_hmm": {
+        "pairs_with_known_arcs_and_gap_at_most_30_s": 16026,
+        "changed_arc_pairs": 1425,
+        "legacy_infinite_or_beyond_cutoff": 1,
+        "legacy_changed_finite_residual_m": {
+          "p25": 14.500250000000001,
+          "p50": 29.7975,
+          "p75": 67.96175,
+          "p90": 129.9642
+        },
+        "projection_aware_changed_finite_residual_m": {
+          "p25": 1.208284429413741,
+          "p50": 6.689440194394314,
+          "p75": 24.780296452956165,
+          "p90": 63.88995799695599
+        },
+        "legacy_finite_residual_gt_50_m": 461,
+        "projection_aware_changed_finite_residual_gt_50_m": 181,
+        "same_arc_backward_projection_over_1m": 3666,
+        "exact_opposite_arc_switches": 609,
+        "opposite_switches_at_window_speed_lt_0_8_mps": 64,
+        "opposite_switches_at_window_speed_ge_3_mps": 248,
+        "opposite_switches_matching_route_first_proxy_pair": 0,
+        "opposite_switch_legacy_residual_m": {
+          "p25": 12.216000000000001,
+          "p50": 21.078000000000003,
+          "p75": 35.399,
+          "p90": 70.2838
+        },
+        "opposite_switch_projection_aware_residual_m": {
+          "p25": 9.213159593418192,
+          "p50": 20.737560191183483,
+          "p75": 40.81820632076084,
+          "p90": 128.9332947798892
+        }
+      },
+      "aadi_extra_trees_hmm": {
+        "pairs_with_known_arcs_and_gap_at_most_30_s": 16026,
+        "changed_arc_pairs": 1485,
+        "legacy_infinite_or_beyond_cutoff": 1,
+        "legacy_changed_finite_residual_m": {
+          "p25": 14.928749999999999,
+          "p50": 29.901999999999997,
+          "p75": 61.27700000000001,
+          "p90": 127.28470000000003
+        },
+        "projection_aware_changed_finite_residual_m": {
+          "p25": 1.3117181043330763,
+          "p50": 7.3879368645875285,
+          "p75": 25.631728154169295,
+          "p90": 58.654662805714594
+        },
+        "legacy_finite_residual_gt_50_m": 431,
+        "projection_aware_changed_finite_residual_gt_50_m": 178,
+        "same_arc_backward_projection_over_1m": 3633,
+        "exact_opposite_arc_switches": 708,
+        "opposite_switches_at_window_speed_lt_0_8_mps": 64,
+        "opposite_switches_at_window_speed_ge_3_mps": 317,
+        "opposite_switches_matching_route_first_proxy_pair": 0,
+        "opposite_switch_legacy_residual_m": {
+          "p25": 13.304499999999999,
+          "p50": 23.52,
+          "p75": 36.24925,
+          "p90": 58.501100000000044
+        },
+        "opposite_switch_projection_aware_residual_m": {
+          "p25": 9.656587486706258,
+          "p50": 21.894783331063334,
+          "p75": 41.197741761300726,
+          "p90": 90.69947113258914
+        }
+      },
+      "omen_frozen_xgboost_hmm": {
+        "pairs_with_known_arcs_and_gap_at_most_30_s": 16026,
+        "changed_arc_pairs": 1608,
+        "legacy_infinite_or_beyond_cutoff": 1,
+        "legacy_changed_finite_residual_m": {
+          "p25": 17.814999999999998,
+          "p50": 35.518,
+          "p75": 74.4265,
+          "p90": 179.54560000000006
+        },
+        "projection_aware_changed_finite_residual_m": {
+          "p25": 1.826974095692544,
+          "p50": 12.833165933671506,
+          "p75": 40.71227180483123,
+          "p90": 148.52261308916977
+        },
+        "legacy_finite_residual_gt_50_m": 578,
+        "projection_aware_changed_finite_residual_gt_50_m": 356,
+        "same_arc_backward_projection_over_1m": 5170,
+        "exact_opposite_arc_switches": 834,
+        "opposite_switches_at_window_speed_lt_0_8_mps": 59,
+        "opposite_switches_at_window_speed_ge_3_mps": 454,
+        "opposite_switches_matching_route_first_proxy_pair": 0,
+        "opposite_switch_legacy_residual_m": {
+          "p25": 17.215,
+          "p50": 30.087999999999997,
+          "p75": 53.149,
+          "p90": 120.19150000000005
+        },
+        "opposite_switch_projection_aware_residual_m": {
+          "p25": 13.252980656523388,
+          "p50": 29.101139912932204,
+          "p75": 73.04761217966099,
+          "p90": 201.44555843103367
+        }
+      }
+    },
+    "replayed_top1": {
+      "original_phase2_geometry_hmm": {
+        "correct": 14143,
+        "observations": 16031,
+        "covered": 15953,
+        "coverage_top1_pct": 88.22281828956397,
+        "conditional_top1_pct": 88.65417162916066
+      },
+      "aadi_catboost_hmm": {
+        "correct": 12339,
+        "observations": 16031,
+        "covered": 15953,
+        "coverage_top1_pct": 76.96962135861767,
+        "conditional_top1_pct": 77.34595373910864
+      },
+      "aadi_extra_trees_hmm": {
+        "correct": 11985,
+        "observations": 16031,
+        "covered": 15953,
+        "coverage_top1_pct": 74.76139978791092,
+        "conditional_top1_pct": 75.12693537265719
+      },
+      "omen_frozen_xgboost_hmm": {
+        "correct": 9176,
+        "observations": 16031,
+        "covered": 15953,
+        "coverage_top1_pct": 57.2390992452124,
+        "conditional_top1_pct": 57.51896195073027
+      }
+    }
+  }
+}
