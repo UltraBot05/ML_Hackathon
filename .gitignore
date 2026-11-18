@@ -23,3 +23,12 @@ Thumbs.db
 *.log
 catboost_info/
 
+
+# Restricted runtime and local evaluation files
+/PathSnap_private/
+/reference_venv/
+/PathSnap-A-G14-main/
+/PathSnap-A-G14-main.zip
+/evaluator_test/
+/private_results/
+/server/.env
