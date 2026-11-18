@@ -1,0 +1,16 @@
+{
+  "xgboost": {
+    "hits": 27396,
+    "observations": 39460,
+    "positive": 39079,
+    "coverage_top1": 0.694272681196148,
+    "conditional_top1": 0.7010414800788147
+  },
+  "logistic": {
+    "hits": 29258,
+    "observations": 39460,
+    "positive": 39079,
+    "coverage_top1": 0.7414597060314242,
+    "conditional_top1": 0.7486885539548095
+  }
+}
