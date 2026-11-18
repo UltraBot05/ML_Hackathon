@@ -1,0 +1,21 @@
+{
+  "model": "Logistic Regression",
+  "owner": "omen",
+  "seed": 42,
+  "training_trip_count": 80,
+  "cv_macro_f1": 0.9375668231499912,
+  "student_test_top1_accuracy": 0.9048016701461378,
+  "student_test_macro_f1": 0.933734810203567,
+  "student_test_log_loss": 0.09615591877465916,
+  "route_continuity": null,
+  "training_seconds": 6.935317500000565,
+  "inference_seconds": 0.018248299999868323,
+  "hyperparameters": {
+    "C": 1.0,
+    "solver": "lbfgs",
+    "max_iter": 1000,
+    "class_weight": null,
+    "random_state": 42
+  },
+  "run_completed": true
+}
