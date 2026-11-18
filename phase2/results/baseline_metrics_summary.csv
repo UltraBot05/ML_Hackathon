@@ -1,0 +1,4 @@
+matcher,top1_accuracy,macro_f1,precision,recall,route_continuity_pct,route_f1,route_jaccard,avg_latency_ms
+direction_aware,76.8875,0.76,0.7561,0.7689,89.8702,0.7662,0.6363,0.0113
+graph_constrained_hmm,83.2188,0.822,0.8175,0.8322,99.2561,0.8804,0.7931,0.989
+nearest_road,59.7611,0.5881,0.5843,0.5976,84.3153,0.7051,0.5517,0.0053

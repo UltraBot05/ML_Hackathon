@@ -1,0 +1,105 @@
+# PathSnap Hackathon — Phase 2 Configuration File
+# All parameters are documented with units, purpose, and defaults.
+
+project:
+  name: "PathSnap Map-Matching & Route Reconstruction"
+  phase: 2
+  random_seed: 42
+
+paths:
+  # Relative to project root
+  dataset_root: "Dataset"
+  phase2_root: "phase2"
+  processed_trajectories: "phase2/processed/trajectories"
+  processed_road_networks: "phase2/processed/road_networks"
+  candidates_dir: "phase2/candidates"
+  features_dir: "phase2/features"
+  baselines_dir: "phase2/baselines"
+  results_dir: "phase2/results"
+  reports_dir: "phase2/reports"
+  logs_dir: "phase2/logs"
+
+partitions:
+  training_partition: "train"
+  # Protected test partition (not processed for training or parameter tuning)
+  test_partition: "student_test"
+
+split:
+  # Trip-level train/validation split (80 trips total in training partition)
+  val_ratio: 0.20
+  random_seed: 42
+  stratify: false
+
+trajectory_processing:
+  # Kinematic threshold for flagging potential multipath velocity anomalies
+  max_speed_threshold_mps: 55.0  # 198 km/h
+  # Threshold for flagging tracking signal gaps
+  gap_threshold_seconds: 300.0   # 5 minutes
+  # Trajectory session break threshold (e.g. overnight or weekend stops)
+  session_split_gap_seconds: 900.0  # 15 minutes
+  # Whether to smooth noisy points for derived features (raw coordinates remain unchanged)
+  enable_kalman_smoothing: false
+
+road_graph:
+  # Coordinate projection for distance calculations: "equirectangular" or "haversine"
+  projection: "equirectangular"
+  earth_radius_meters: 6371000.0
+  # Maximum network shortest-path search cutoff in meters for transition calculation
+  max_network_search_meters: 2000.0
+
+candidate_generation:
+  # Spatial search radius in meters around each GPS point
+  search_radius_meters: 60.0
+  # Maximum number of road segment candidates to retain per observation
+  max_candidates_per_point: 10
+  # Fallback search radius in meters if no candidates found within primary radius
+  fallback_search_radius_meters: 120.0
+
+feature_engineering:
+  # Compute geometric point-to-arc features
+  include_geometry_features: true
+  # Compute movement and heading alignment features
+  include_movement_features: true
+  # Compute topological network transition features
+  include_transition_features: true
+  # Road heading difference weight
+  heading_weight: 1.0
+
+label_generation:
+  # Tolerance window in meters for mapping GPS observations to ground-truth route arcs
+  route_match_tolerance_meters: 45.0
+
+baselines:
+  # Baseline A: Simple Nearest Road
+  nearest_road:
+    enabled: true
+  # Baseline B: Direction-Aware Nearest Road (combining distance and heading alignment)
+  direction_aware:
+    enabled: true
+    heading_weight: 0.35
+    distance_weight: 0.65
+  # Baseline C: Graph-Constrained Sequence Matching (HMM with Viterbi decoding)
+  graph_constrained:
+    enabled: true
+    # HMM emission distribution standard deviation (meters)
+    emission_sigma_meters: 6.0
+    # HMM transition distribution exponential scale parameter (beta)
+    transition_beta: 40.0
+    # Penalty factor for disconnected network transitions
+    disconnection_penalty: -50.0
+
+evaluation:
+  top_k_ranks: [1, 3, 5]
+  metrics:
+    - "top1_accuracy"
+    - "candidate_miss_rate"
+    - "macro_f1"
+    - "precision"
+    - "recall"
+    - "route_continuity_pct"
+    - "avg_inference_latency_ms"
+
+logging:
+  level: "INFO"
+  log_to_file: true
+  log_file: "phase2/logs/phase2_execution.log"
