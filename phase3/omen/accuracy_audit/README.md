@@ -54,6 +54,22 @@ Training CV selected XGBoost for the five-trial TPE search. The best trial used 
 
 These route metrics use consecutive deduplication of classifier outputs before HMM or path bridging. They differ in stage from a reconstructed HMM route. The per-trip metrics, route sizes, and continuity accompany the [comparison](results/comparison.json). The [XGBoost baseline](results/xgboost_baseline.zip), [LightGBM baseline](results/lightgbm_baseline.zip), and [tuned XGBoost](results/xgboost_tuned.zip) include fitted estimators, native models, and candidate predictions. The complete [Optuna trial history](results/optuna_trials.json) records fold groups and scores.
 
+## Matched HMM and team comparison
+
+The [six-model replay](AUDIT_TEAM.md) holds the 16 validation trips, feature order, and scoring denominators fixed. Trip `00000084` has 16,031 observations. Aadi's Extra Trees leads his six-model classifier table at 74.85% micro Top-1. Adarsh's separate Extra Trees artifact reaches 74.92%. The historical LightGBM row applied coverage twice. The exact classifier replay gives 69.14% micro. The reported LightGBM + HMM result of 86.26% is conditional trip-macro Top-1. Its observation-weighted coverage-aware rate is 71.97%.
+
+| Decoded method | Phase 2 proxy micro | Route-first proxy micro | Phase 2 proxy macro trip | Mean bridged continuity | Mean directed arc-set F1 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Original Phase 2 geometry HMM | **85.42%** | — | 83.67% | 99.17% | 0.8877 |
+| Extra Trees + HMM (Aadi) | 82.60% | 82.60% | **87.08%** | 99.31% | 0.8828 |
+| CatBoost + HMM | 81.73% | **83.54%** | 87.03% | 99.21% | 0.8808 |
+| LightGBM + HMM (Adarsh) | 71.97% | 73.08% | 85.67% | 99.15% | 0.8911 |
+| Frozen Omen XGBoost baseline + HMM | 75.53% | 75.83% | 86.27% | **99.34%** | **0.8950** |
+
+Every Top-1 entry in this table includes all observations. Both proxy columns compare the same decoded outputs to different observation references. Route quality uses the supplied directed route and the same Phase 2 reconstruction method. The Omen model was trained on route-first labels, while the teammate models are their preserved legacy fits. The [Omen HMM replay](results/xgboost_hmm_validation.json) shows route-first trip-macro Top-1 of 86.53% and a worst trip of 57.24% on `00000084`.
+
+The deployable Omen service is documented in the [API contract](AUDIT_API.md). It runs raw-trip feature generation, classification, Adarsh's ML-emission HMM, and Phase 2 route reconstruction without reading the reference route. The checked-in XGBoost baseline is the verified Omen deployment artifact.
+
 ## Reproduce on the Omen or Aadi’s machine
 
 Run at the repository root, using the repository dependencies plus XGBoost, LightGBM, Optuna, FastAPI, and Uvicorn. The Omen used XGBoost 3.4.1, LightGBM 4.7.0, Optuna 5.1.0, and FastAPI 0.163.2. The cache, model results, and package directories can be external to the repository.
@@ -61,6 +77,7 @@ Run at the repository root, using the repository dependencies plus XGBoost, Ligh
 ```powershell
 python -B phase3/omen/accuracy_audit/build_audit_dataset.py --output ../omen_route_first_v1
 python -B phase3/omen/accuracy_audit/train_audit_boosters.py --cache ../omen_route_first_v1 --output ../omen_booster_audit_v1 --folds 3 --trials 5 --seconds 150
+python -B phase3/omen/accuracy_audit/score_audit_api.py --cache ../omen_route_first_v1 --archive phase3/omen/accuracy_audit/results/xgboost_baseline.zip --output ../omen_xgboost_hmm_replay.json
 ```
 
 For an interrupted cache only, use `--resume` to verify and reuse any completed trip Parquet files. For a completed cache or run, choose a new output path to run again. Aadi can load `features/{train,val}/<trip_id>.parquet` and `observations/{train,val}/<trip_id>.parquet`, fit only on the training split, and pass the full validation observation ledger to the shared scoring function in `train_canonical.py`. Use the manifest's hash and exact feature order in the resulting records. The archive contract also supports model reuse through `model_registry.py`.

@@ -1,15 +1,15 @@
 # PathSnap accuracy audit API
 
-Run from `phase3/omen/accuracy_audit` in the PathSnap checkout. Use the same Python environment as the selected candidate classifier, with FastAPI and Uvicorn available.
+Run from the PathSnap checkout root. Use the same Python environment as the fitted classifier, with FastAPI and Uvicorn available.
 
 ```powershell
-$env:PATHSNAP_TRIP_ROOT = (Resolve-Path '../../../Dataset/train').Path
-$env:PATHSNAP_MODEL_ARCHIVE = (Resolve-Path '../review1/experiment.zip').Path
-$env:PATHSNAP_CORS_ORIGINS = 'http://localhost:5173'
-python audit_api.py
+$env:PATHSNAP_TRIP_ROOT = (Resolve-Path 'Dataset/train').Path
+$env:PATHSNAP_MODEL_ARCHIVE = (Resolve-Path 'phase3/omen/accuracy_audit/results/xgboost_baseline.zip').Path
+$env:PATHSNAP_MODEL = 'xgboost'
+python -B phase3/omen/accuracy_audit/audit_api.py
 ```
 
-The API binds to `127.0.0.1:8000` by default. `PATHSNAP_HOST` and `PATHSNAP_PORT` set the listen address. `PATHSNAP_CORS_ORIGINS` accepts comma-separated browser origins. Leave it unset for same-origin requests. A local evaluator can set `PATHSNAP_TRIP_ROOT` to a different partition. Each trip is an eight-digit directory containing `<trip_id>.track`, `<trip_id>.nodes`, and `<trip_id>.arcs`. By default the server uses the checkout's `Dataset/train`.
+The API binds to `127.0.0.1:8000` by default. Set `PATHSNAP_HOST` to the Omen’s ZeroTier IPv4 address for Aadi’s Mac, and use that address as the base URL. `PATHSNAP_PORT` defaults to 8000. `PATHSNAP_CORS_ORIGINS` accepts comma-separated origins for direct browser clients. A local evaluator can set `PATHSNAP_TRIP_ROOT` to a different partition. Each trip is an eight-digit directory containing `<trip_id>.track`, `<trip_id>.nodes`, and `<trip_id>.arcs`.
 
 `PATHSNAP_MODEL_ARCHIVE` selects a trusted experiment ZIP. Each selectable model has `<model>/model.joblib` and `<model>/results.json` in the archive. The report's `feature_order` must match the canonical Phase 2 features and the estimator must support `predict_proba` for classes `[0, 1]`. Use `PATHSNAP_MODEL` to set the default. With no preference configured, the API selects XGBoost when present or the first available model in the team registry. Restart after switching archives. `PATHSNAP_REPO_ROOT` overrides the checkout path when running the API files from another directory.
 
@@ -18,7 +18,7 @@ The API binds to `127.0.0.1:8000` by default. `PATHSNAP_HOST` and `PATHSNAP_PORT
 ```json
 {
   "status": "ok",
-  "available_models": ["logistic", "xgboost"],
+  "available_models": ["xgboost"],
   "default_model": "xgboost",
   "trip_root_available": true
 }
@@ -58,4 +58,6 @@ Errors use FastAPI's `detail` field. `404` means the trip, its raw files, or the
 
 Prediction uses the canonical Phase 2 route-free features, the ML-emission Viterbi decoder from `768a80b6100ca4332ce7d27b5736b64ed64cbac4`, and Phase 2 route reconstruction. Continuity measures predicted arcs against the road graph. The API exposes only raw GPS and generated predictions for the selected trip.
 
-Run the API contract tests with `python -m unittest -v test_audit_api` from this directory.
+Live HTTP verification from the Omen to its own ZeroTier listener returned 200 on a public trip with 1,045 observations and 105 reconstructed arcs at 100% directed continuity. A separate loopback check against the private partition discovered ten trips and returned 200 for one raw-trip prediction. It used only the three inference files and did not score or retain the response.
+
+From the repository root, run the API contract tests with `python -B -m unittest discover -s phase3/omen/accuracy_audit -p test_audit_api.py -v`.

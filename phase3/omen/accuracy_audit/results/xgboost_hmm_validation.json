@@ -1,0 +1,322 @@
+{
+  "dataset_version": "omen-phase2-route-first-v1",
+  "dataset_manifest_sha256": "3d5fac347b7f28cca231e2ef212eb7e32ebd6e542aa0566a4b03c8d08cce5728",
+  "artifact_sha256": "2338cd6a50ea58a2ff53b1dc05366efb624812c782349a6a58b172285a8775b1",
+  "model": "xgboost",
+  "per_trip": [
+    {
+      "trip_id": "00000001",
+      "observations": 1315,
+      "route_first_covered": 1313,
+      "route_first_hits": 1268,
+      "legacy_covered": 1313,
+      "legacy_hits": 1273,
+      "continuity_pct": 99.82,
+      "route_set_f1": 0.9435707678075855,
+      "decoded_route_arcs": 558,
+      "timings_ms": {
+        "preprocessing": 3571.857,
+        "classifier": 14.837,
+        "hmm": 1031.514,
+        "reconstruction": 6.825,
+        "total": 4625.032
+      }
+    },
+    {
+      "trip_id": "00000005",
+      "observations": 1045,
+      "route_first_covered": 1045,
+      "route_first_hits": 1015,
+      "legacy_covered": 1045,
+      "legacy_hits": 1015,
+      "continuity_pct": 100.0,
+      "route_set_f1": 0.9904761904761905,
+      "decoded_route_arcs": 105,
+      "timings_ms": {
+        "preprocessing": 102.107,
+        "classifier": 5.536,
+        "hmm": 23.206,
+        "reconstruction": 0.254,
+        "total": 131.104
+      }
+    },
+    {
+      "trip_id": "00000013",
+      "observations": 2580,
+      "route_first_covered": 2580,
+      "route_first_hits": 2408,
+      "legacy_covered": 2580,
+      "legacy_hits": 2424,
+      "continuity_pct": 99.63,
+      "route_set_f1": 0.9748427672955975,
+      "decoded_route_arcs": 822,
+      "timings_ms": {
+        "preprocessing": 6304.301,
+        "classifier": 11.882,
+        "hmm": 834.78,
+        "reconstruction": 4.789,
+        "total": 7155.751
+      }
+    },
+    {
+      "trip_id": "00000016",
+      "observations": 1305,
+      "route_first_covered": 1293,
+      "route_first_hits": 949,
+      "legacy_covered": 1294,
+      "legacy_hits": 891,
+      "continuity_pct": 99.37,
+      "route_set_f1": 0.7505827505827506,
+      "decoded_route_arcs": 319,
+      "timings_ms": {
+        "preprocessing": 582.899,
+        "classifier": 9.014,
+        "hmm": 328.679,
+        "reconstruction": 3.927,
+        "total": 924.518
+      }
+    },
+    {
+      "trip_id": "00000024",
+      "observations": 801,
+      "route_first_covered": 801,
+      "route_first_hits": 796,
+      "legacy_covered": 801,
+      "legacy_hits": 800,
+      "continuity_pct": 100.0,
+      "route_set_f1": 0.9979879275653923,
+      "decoded_route_arcs": 248,
+      "timings_ms": {
+        "preprocessing": 993.363,
+        "classifier": 5.084,
+        "hmm": 206.46,
+        "reconstruction": 0.5,
+        "total": 1205.406
+      }
+    },
+    {
+      "trip_id": "00000028",
+      "observations": 3565,
+      "route_first_covered": 3544,
+      "route_first_hits": 3407,
+      "legacy_covered": 3544,
+      "legacy_hits": 3422,
+      "continuity_pct": 99.28,
+      "route_set_f1": 0.9281767955801105,
+      "decoded_route_arcs": 691,
+      "timings_ms": {
+        "preprocessing": 3346.532,
+        "classifier": 10.889,
+        "hmm": 605.392,
+        "reconstruction": 12.682,
+        "total": 3975.495
+      }
+    },
+    {
+      "trip_id": "00000035",
+      "observations": 1643,
+      "route_first_covered": 1640,
+      "route_first_hits": 1432,
+      "legacy_covered": 1641,
+      "legacy_hits": 1452,
+      "continuity_pct": 98.32,
+      "route_set_f1": 0.916083916083916,
+      "decoded_route_arcs": 537,
+      "timings_ms": {
+        "preprocessing": 1880.11,
+        "classifier": 13.992,
+        "hmm": 861.529,
+        "reconstruction": 5.647,
+        "total": 2761.277
+      }
+    },
+    {
+      "trip_id": "00000037",
+      "observations": 677,
+      "route_first_covered": 677,
+      "route_first_hits": 653,
+      "legacy_covered": 677,
+      "legacy_hits": 661,
+      "continuity_pct": 100.0,
+      "route_set_f1": 0.9421965317919075,
+      "decoded_route_arcs": 193,
+      "timings_ms": {
+        "preprocessing": 938.808,
+        "classifier": 6.926,
+        "hmm": 403.589,
+        "reconstruction": 0.65,
+        "total": 1349.973
+      }
+    },
+    {
+      "trip_id": "00000038",
+      "observations": 1287,
+      "route_first_covered": 1287,
+      "route_first_hits": 1130,
+      "legacy_covered": 1287,
+      "legacy_hits": 1135,
+      "continuity_pct": 100.0,
+      "route_set_f1": 0.8983739837398373,
+      "decoded_route_arcs": 352,
+      "timings_ms": {
+        "preprocessing": 1374.955,
+        "classifier": 9.882,
+        "hmm": 734.426,
+        "reconstruction": 1.995,
+        "total": 2121.257
+      }
+    },
+    {
+      "trip_id": "00000041",
+      "observations": 1019,
+      "route_first_covered": 1018,
+      "route_first_hits": 948,
+      "legacy_covered": 1018,
+      "legacy_hits": 973,
+      "continuity_pct": 99.47,
+      "route_set_f1": 0.958981612446959,
+      "decoded_route_arcs": 379,
+      "timings_ms": {
+        "preprocessing": 770.255,
+        "classifier": 9.164,
+        "hmm": 327.152,
+        "reconstruction": 4.962,
+        "total": 1111.533
+      }
+    },
+    {
+      "trip_id": "00000043",
+      "observations": 2322,
+      "route_first_covered": 2180,
+      "route_first_hits": 1703,
+      "legacy_covered": 2181,
+      "legacy_hits": 1718,
+      "continuity_pct": 95.44,
+      "route_set_f1": 0.7435098650051921,
+      "decoded_route_arcs": 724,
+      "timings_ms": {
+        "preprocessing": 4737.672,
+        "classifier": 10.164,
+        "hmm": 698.623,
+        "reconstruction": 938.139,
+        "total": 6384.597
+      }
+    },
+    {
+      "trip_id": "00000055",
+      "observations": 2472,
+      "route_first_covered": 2472,
+      "route_first_hits": 2463,
+      "legacy_covered": 2472,
+      "legacy_hits": 2459,
+      "continuity_pct": 100.0,
+      "route_set_f1": 0.9989462592202318,
+      "decoded_route_arcs": 474,
+      "timings_ms": {
+        "preprocessing": 3946.25,
+        "classifier": 8.087,
+        "hmm": 407.927,
+        "reconstruction": 2.265,
+        "total": 4364.529
+      }
+    },
+    {
+      "trip_id": "00000061",
+      "observations": 1430,
+      "route_first_covered": 1312,
+      "route_first_hits": 825,
+      "legacy_covered": 1355,
+      "legacy_hits": 782,
+      "continuity_pct": 98.64,
+      "route_set_f1": 0.7871148459383753,
+      "decoded_route_arcs": 954,
+      "timings_ms": {
+        "preprocessing": 1388.306,
+        "classifier": 9.539,
+        "hmm": 965.135,
+        "reconstruction": 10.418,
+        "total": 2373.399
+      }
+    },
+    {
+      "trip_id": "00000084",
+      "observations": 16031,
+      "route_first_covered": 15953,
+      "route_first_hits": 9176,
+      "legacy_covered": 15993,
+      "legacy_hits": 9087,
+      "continuity_pct": 99.45,
+      "route_set_f1": 0.7756370416407706,
+      "decoded_route_arcs": 1819,
+      "timings_ms": {
+        "preprocessing": 2738.25,
+        "classifier": 41.059,
+        "hmm": 952.518,
+        "reconstruction": 9.476,
+        "total": 3741.303
+      }
+    },
+    {
+      "trip_id": "00000085",
+      "observations": 1092,
+      "route_first_covered": 1088,
+      "route_first_hits": 979,
+      "legacy_covered": 1089,
+      "legacy_hits": 970,
+      "continuity_pct": 100.0,
+      "route_set_f1": 0.8802083333333334,
+      "decoded_route_arcs": 274,
+      "timings_ms": {
+        "preprocessing": 185.449,
+        "classifier": 8.068,
+        "hmm": 76.565,
+        "reconstruction": 0.877,
+        "total": 270.959
+      }
+    },
+    {
+      "trip_id": "00000088",
+      "observations": 876,
+      "route_first_covered": 876,
+      "route_first_hits": 770,
+      "legacy_covered": 876,
+      "legacy_hits": 744,
+      "continuity_pct": 100.0,
+      "route_set_f1": 0.8337595907928389,
+      "decoded_route_arcs": 269,
+      "timings_ms": {
+        "preprocessing": 1129.807,
+        "classifier": 8.953,
+        "hmm": 936.543,
+        "reconstruction": 1.011,
+        "total": 2076.314
+      }
+    }
+  ],
+  "route_first": {
+    "observations": 39460,
+    "covered": 39079,
+    "hits": 29922,
+    "coverage_top1": 0.7582868727825646,
+    "conditional_top1": 0.7656797768622534,
+    "macro_trip_coverage_top1": 0.8652871111461689,
+    "macro_trip_conditional_top1": 0.872921150729822,
+    "worst_trip_id": "00000084",
+    "worst_trip_top1": 0.572390992452124,
+    "mean_bridged_continuity_pct": 99.33875,
+    "mean_directed_route_set_f1": 0.8950280737063119
+  },
+  "phase2_legacy": {
+    "observations": 39460,
+    "covered": 39166,
+    "hits": 29806,
+    "coverage_top1": 0.7553471870248353,
+    "conditional_top1": 0.7610172088035541,
+    "macro_trip_coverage_top1": 0.8626913174663,
+    "macro_trip_conditional_top1": 0.8687461041359721,
+    "worst_trip_id": "00000061",
+    "worst_trip_top1": 0.5468531468531469,
+    "mean_bridged_continuity_pct": 99.33875,
+    "mean_directed_route_set_f1": 0.8950280737063119
+  }
+}
