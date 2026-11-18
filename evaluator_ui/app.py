@@ -132,7 +132,7 @@ def show_prediction_map(prediction):
         m = folium.Map(
             location=bounds[0],
             zoom_start=15,
-            tiles="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+            tiles="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=cb1_5bhz_1_52b498fdc9aac4015cc35f5a",
             attr="© OpenStreetMap contributors © CARTO",
             name="Basemap",
         )

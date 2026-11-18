@@ -508,7 +508,7 @@ def generate_interactive_folium_map(trip_id="00000003", tiles="CartoDB positron"
     if tiles and str(tiles).lower() in ("cartodb positron", "cartodbpositron", "default"):
         m = folium.Map(location=[center_lat, center_lon], zoom_start=13, tiles=None)
         folium.TileLayer(
-            tiles="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+            tiles="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=cb1_5bhz_1_52b498fdc9aac4015cc35f5a",
             attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
             name="CartoDB Positron (Clean Default)",
             subdomains="abcd",
