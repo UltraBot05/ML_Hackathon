@@ -1,4 +1,5 @@
-streamlit>=1.65
-requests
-pandas
-folium
+streamlit==1.50.0
+folium==0.20.0
+streamlit-folium==0.25.3
+requests>=2.31.0
+pandas>=2.0.0
