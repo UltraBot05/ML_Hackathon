@@ -1,0 +1,37 @@
+# PathSnap Hackathon — Phase 3 Model Configuration (Adarsh's Models)
+# Extra Trees Classifier & LightGBM Classifier
+
+project:
+  name: "PathSnap Phase 3 ML Models"
+  author: "Adarsh"
+  date: "2026-11-18"
+  random_seed: 42
+
+models:
+  extra_trees:
+    n_estimators: 100
+    max_depth: 16
+    min_samples_leaf: 20
+    max_features: "sqrt"
+    bootstrap: false
+    n_jobs: -1
+    random_state: 42
+
+  lightgbm:
+    n_estimators: 150
+    max_depth: 8
+    num_leaves: 31
+    learning_rate: 0.08
+    subsample: 0.8
+    colsample_bytree: 0.8
+    min_child_samples: 20
+    n_jobs: -1
+    random_state: 42
+    verbose: -1
+
+hmm_integration:
+  transition_beta: 40.0
+  disconnection_penalty: -50.0
+  max_network_cutoff_m: 1500.0
+  ml_prob_smoothing: 1.0e-6
+

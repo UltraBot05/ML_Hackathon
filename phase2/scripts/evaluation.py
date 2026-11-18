@@ -1,9 +1,10 @@
 """
-PathSnap Hackathon — Phase 2: Evaluation Framework
+PathSnap Hackathon — Evaluation Framework
 Computes empirical metrics across matchers and trips:
 - Observation Top-1 / Top-3 / Top-5 Accuracy
-- Candidate Miss Rate
-- Binary Classification Precision, Recall, Macro-F1
+- Coverage-Aware Top-1 Accuracy (penalizes candidate misses)
+- Standard Sklearn Binary and Macro-F1 across classes
+- Log Loss and Candidate Confusion Matrix
 - Route Continuity Percentage
 - Route Set Similarity (Jaccard, F1)
 - Inference Latency per Observation
@@ -14,6 +15,14 @@ import time
 import pandas as pd
 import numpy as np
 import logging
+from sklearn.metrics import (
+    f1_score,
+    precision_score,
+    recall_score,
+    accuracy_score,
+    log_loss,
+    confusion_matrix,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("Evaluator")
@@ -31,6 +40,8 @@ class ModelEvaluator:
     ) -> Dict[str, float]:
         """
         Computes observation-level Top-1 accuracy, Precision, Recall, and F1.
+        Preserves backward compatibility with Phase 2 baseline scripts while documenting
+        distinction between positive-class binary F1 and standard two-class Macro F1.
         """
         if len(predictions) != len(ground_truth):
             raise ValueError(f"Length mismatch: {len(predictions)} preds vs {len(ground_truth)} gt")
@@ -59,19 +70,72 @@ class ModelEvaluator:
                     fp += 1
 
         accuracy = (correct / valid_gt * 100.0) if valid_gt > 0 else 0.0
+        coverage_aware_accuracy = (correct / total * 100.0) if total > 0 else 0.0
         precision = (tp / (tp + fp)) if (tp + fp) > 0 else 0.0
         recall = (tp / (tp + fn)) if (tp + fn) > 0 else 0.0
-        f1 = (2.0 * precision * recall / (precision + recall)) if (precision + recall) > 0 else 0.0
+        binary_f1 = (2.0 * precision * recall / (precision + recall)) if (precision + recall) > 0 else 0.0
 
         return {
             "top1_accuracy": round(accuracy, 2),
-            "macro_f1": round(f1, 4),
+            "coverage_aware_top1": round(coverage_aware_accuracy, 2),
+            # 'macro_f1' retained as alias to binary_f1 for Phase 2 backward compatibility
+            "macro_f1": round(binary_f1, 4),
+            "binary_f1": round(binary_f1, 4),
             "precision": round(precision, 4),
             "recall": round(recall, 4),
             "total_obs": total,
             "valid_gt_obs": valid_gt,
             "correct_obs": correct,
         }
+
+    def evaluate_binary_classification(
+        self,
+        y_true: np.ndarray,
+        y_pred: np.ndarray,
+        y_prob: Optional[np.ndarray] = None,
+    ) -> Dict[str, Any]:
+        """
+        Computes standard scikit-learn binary and two-class Macro-F1 metrics for supervised ML models.
+        Macro F1 is defined strictly as the unweighted mean of class 0 F1 and class 1 F1.
+        """
+        y_true = np.asarray(y_true).astype(int)
+        y_pred = np.asarray(y_pred).astype(int)
+
+        acc = accuracy_score(y_true, y_pred)
+        prec = precision_score(y_true, y_pred, average="binary", zero_division=0)
+        rec = recall_score(y_true, y_pred, average="binary", zero_division=0)
+        bin_f1 = f1_score(y_true, y_pred, average="binary", zero_division=0)
+        mac_f1 = f1_score(y_true, y_pred, average="macro", zero_division=0)
+
+        cm = confusion_matrix(y_true, y_pred, labels=[0, 1])
+        tn, fp, fn, tp = cm.ravel() if cm.size == 4 else (0, 0, 0, 0)
+
+        metrics = {
+            "candidate_accuracy": round(float(acc), 4),
+            "binary_f1": round(float(bin_f1), 4),
+            "macro_f1": round(float(mac_f1), 4),
+            "precision": round(float(prec), 4),
+            "recall": round(float(rec), 4),
+            "confusion_matrix": {
+                "tn": int(tn),
+                "fp": int(fp),
+                "fn": int(fn),
+                "tp": int(tp),
+            },
+            "total_samples": int(len(y_true)),
+        }
+
+        if y_prob is not None:
+            # Clip probabilities to avoid infinite log_loss
+            y_prob_clipped = np.clip(y_prob, 1e-15, 1.0 - 1e-15)
+            try:
+                loss = log_loss(y_true, y_prob_clipped)
+                metrics["log_loss"] = round(float(loss), 4)
+            except Exception as e:
+                logger.warning(f"Failed to compute log_loss: {e}")
+                metrics["log_loss"] = None
+
+        return metrics
 
     def evaluate_candidate_ranking(
         self,
@@ -121,4 +185,3 @@ class ModelEvaluator:
             "candidate_top5_pct": top5_rec,
             "candidate_miss_rate_pct": miss_rate,
         }
-

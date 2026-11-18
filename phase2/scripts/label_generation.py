@@ -17,7 +17,22 @@ logger = logging.getLogger("LabelGenerator")
 
 class LabelGenerator:
     """
-    Aligns trajectory GPS observations to ground-truth route arcs and assigns candidate labels.
+    Aligns trajectory GPS observations to ground-truth route arcs and assigns candidate proxy labels.
+
+    METHODOLOGICAL NOTE & LIMITATION NOTICE:
+    Ground truth in the PathSnap dataset is provided as an unindexed sequence of visited route arcs
+    (.route) rather than observation-to-arc timestamps. The LabelGenerator selects a proxy reference
+    arc by searching within a monotonic causal forward/backward window along .route for candidates
+    present in the observation's spatial candidate set.
+    
+    LIMITATION:
+    Because this alignment strategy selects from the spatial candidates returned by the KD-Tree index,
+    the resulting alignment represents a 'proxy ground truth' rather than an independently verified
+    external sensor ground truth. If the true traversed arc was missed by candidate generation,
+    the alignment will either mark the observation as unmatched (None) or fall back to an adjacent
+    route arc within the candidate set. Candidate recall computed under this proxy alignment must be
+    interpreted as 'Candidate-to-Proxy Alignment Recall' rather than absolute independently verified
+    true-route coverage.
     """
 
     def __init__(self, forward_window_size: int = 15, backward_window_size: int = 2):
