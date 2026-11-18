@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body { font-family: -apple-system, sans-serif; background: #0d1117; color: #c9d1d9; padding: 24px; }
+.badge { background: #238636; color: white; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 14px; }
+.card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 18px; margin-top: 14px; }
+h2 { color: #58a6ff; margin-top: 0; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+th, td { border: 1px solid #30363d; padding: 8px 12px; text-align: left; }
+th { background: #21262d; color: #f0f6fc; }
+code { color: #79c0ff; }
+</style>
+</head>
+<body>
+<h2>PathSnap Distributed API Verification &mdash; Omen Host</h2>
+<p><span class='badge'>HTTP 200 OK</span> &nbsp; Host: <code>http://10.92.151.151:8000/predict</code> &nbsp; Latency: <code>1030.20 ms</code></p>
+<div class='card'>
+<h3>Payload & Evaluation Response Details</h3>
+<table>
+<tr><th>Parameter</th><th>Value</th></tr>
+<tr><td>Target Trip ID</td><td><code>00000000</code></td></tr>
+<tr><td>Partition</td><td><code>student_test</code></td></tr>
+<tr><td>Model Identifier</td><td><code>best</code> (<code>ta-reference-lightgbm-24f</code>)</td></tr>
+<tr><td>Feature Pipeline</td><td><code>ta-reference-24f</code> (24 features)</td></tr>
+<tr><td>HMM Viterbi Active</td><td><code>True</code></td></tr>
+<tr><td>GPS Observations Processed</td><td><code>2503 fixes</code></td></tr>
+<tr><td>Predicted Route Arcs</td><td><code>199 continuous arcs</code></td></tr>
+<tr><td>Top-1 Directed Accuracy</td><td><strong>96.92%</strong></td></tr>
+<tr><td>Sequence Continuity</td><td><strong>98.99%</strong></td></tr>
+<tr><td>Directed Route F1</td><td><strong>94.15%</strong></td></tr>
+<tr><td>Candidate Recall</td><td><strong>99.72%</strong></td></tr>
+</table>
+</div>
+</body>
+</html>
