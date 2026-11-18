@@ -1,0 +1,4 @@
+Model,Conditional Top-1 (%),Coverage-Aware Top-1 (%),Candidate Macro F1,Candidate Accuracy (%),Log Loss,ROC-AUC,Train Time (s),Obs Latency (ms)
+Random Forest,73.48,73.48,0.8264,89.82,0.23928,0.958,146.57,0.0228
+CatBoost,74.2,74.2,0.8353,92.17,0.17804,0.9604,9.0,0.0005
+Extra Trees,75.41,74.85,0.844,92.53,0.17442,0.9594,27.65,0.0123

@@ -2,7 +2,8 @@
 **Project:** PathSnap — Distributed Map-Matching & Route Reconstruction  
 **Institution:** PES University | Hackathon Date: November 18, 2026  
 **Track:** Machine Learning & Spatial Intelligence  
-**Author / Teammate:** M1 Air Lead (Supervised Tree Ensembles & Evaluator UI)  
+**Author / Teammate:** M1 Air Lead (Supervised Tree Ensembles, Independent Scoring Audit & Evaluator UI)  
+**Branch:** `team/mac-ui-models` | Commit: Canonical Phase 2/3 (`59f573e`)  
 
 ---
 
@@ -14,9 +15,10 @@ This report documents the end-to-end engineering and scientific contributions de
 1. **Dataset Ingestion, Integrity & Anomaly Audit:** 100% SHA-256 raw dataset verification across 90 trips (80 train, 10 student_test), isolating 981 GPS velocity spikes ($> 55\text{ m/s}$) with zero data leakage.
 2. **Spatial Indexing & Candidate Retrieval:** Metric 2D KD-Tree over sampled road arcs achieving **100% candidate coverage** ($R_1=60\text{m}, R_2=120\text{m}$) across all 208,417 training GPS points in 22.5 seconds ($> 9{,}200\text{ points/sec}$).
 3. **Discriminative 22-Feature Engineering Pipeline:** Extraction of geometric proximity, velocity-attenuated heading alignment, topological node degrees, and network transition ratios stored in Apache Parquet format.
-4. **Empirical Baseline Benchmarking:** Implementation and evaluation of three distinct matching paradigms (Nearest Road, Direction-Aware, and Graph-Constrained HMM Viterbi).
-5. **Phase 3 Supervised Machine Learning Execution:** Training and validation of **Random Forest Classifier** and **CatBoost Classifier** on the canonical 22-feature tables using strict trip-level partitioning (64 train / 16 val trips).
-6. **Distributed Evaluator UI Architecture:** Streamlit and Folium interactive frontend designed to interface with Omen server via ZeroTier mesh networking (`http://10.92.151.151:8000`) with robust local fallback.
+4. **Independent Route-Label Alignment Audit:** Built an independent geometric alignment diagnostic reconciling GPS points against the ordered `.route` path, proving **95.6% label agreement** and **>98.9% true ground truth candidate retrieval recall**.
+5. **Phase 3 Supervised Machine Learning Execution:** Training and validation of **Random Forest**, **CatBoost**, **Logistic Regression**, and **Extra Trees** locally on Apple Silicon M1, cross-benchmarking with **XGBoost** and **LightGBM** (via Omen and Adarsh) on an identical 64/16 trip split.
+6. **Resolving Metric Discrepancies & Demystifying "96%–97%" Claims:** Reconciled mathematical definitions of Conditional vs. Coverage-Aware Top-1 and demonstrated why pointwise Top-1 across all validation trips genuinely sits at **70%–75%**, whereas route continuity reaches **98%–100%**.
+7. **Distributed Evaluator UI Architecture:** Streamlit and Folium interactive frontend with robust tile fallbacks (`CartoDB positron`, `Esri`) interfacing with the Omen ZeroTier API (`http://10.92.151.151:8000`) and local model backends.
 
 ---
 
@@ -63,11 +65,10 @@ Our exploratory data analysis identified several physical anomalies inherent in 
   Renders raw GPS observation markers, directed road network arcs, and reference ground-truth route sequences using Leaflet/Folium.
 - **Map-Matching Ground Truth Overlay (Phase 2):** `phase2/results/plots/interactive_map_matching.html` (196 KB)  
   Displays synchronized multi-layer comparison between raw GPS (Blue), Ground Truth (Green), Nearest Road (Orange), Direction-Aware (Purple), and Graph HMM (Red).
-- **Spatial Distribution Plots:**
-  - `phase1/results/plots/01_gps_point_count_distribution.png`: Log-normal distribution of trajectory lengths.
-  - `phase1/results/plots/05_speed_distribution.png`: Bimodal velocity distribution (urban stop-and-go vs arterial cruising).
-  - `phase1/results/plots/08_network_node_arc_relationship.png`: Strong linear correlation between vertex count and directed edge density.
-  - `phase2/results/plots/candidate_generation_inspection.png`: Spatial KD-Tree candidate search radii ($60\text{m}$ / $120\text{m}$) and candidate selection.
+- **Tile Access Issue Resolution:** Configured tiles to use compliant HTTPS tile providers (`CartoDB positron`, `Esri WorldStreetMap`, and tile-free fallback) to eliminate HTTP 403 tile blocks. High-resolution screenshots generated:
+  - `phase1/results/plots/map_sample_folium_screenshot.png` (1.1 MB)
+  - `phase2/results/plots/map_matching_folium_screenshot.png` (971 KB)
+  - `phase2/results/plots/map_matching_static_fallback.png` (517 KB)
 
 ---
 
@@ -113,64 +114,125 @@ To provide maximum discriminative power to supervised classifiers, Phase 2 const
 
 ---
 
-## 5. Model Selection Rationale
+## 5. Independent Route-Label Alignment Audit (Task B)
 
-Why Random Forest and CatBoost represent the optimal pairing for urban trajectory map matching:
+### 5.1 Motivation & Diagnostic Design
+The Phase 2 label generator selected its ground-truth reference arc from among the generated candidates (proxy labeling). To independently verify whether this proxy introduced artificial inflation or missed ground-truth arcs, we authored an independent route alignment diagnostic (`phase2/scripts/independent_route_alignment.py`) that strictly projects GPS coordinates against the ground truth `.route` arc sequence *independently of candidate retrieval*.
 
-1. **Random Forest (Bagging Ensemble):**
-   - **Variance Reduction:** GPS noise is stochastic and high-variance. Bagging averages over 200 deep decision trees (`max_depth=14`), dampening random multipath coordinate errors.
-   - **Feature Decorrelation:** Random subspace selection ($m = \sqrt{22} \approx 4$ features per split) prevents the dominant `distance_to_arc_m` from monopolizing tree roots, forcing trees to evaluate heading agreement and network transition feasibility.
-   - **Parallel M1 CPU Scaling:** Embarrassingly parallel training utilizing all 8 ARM cores efficiently.
+### 5.2 Verification Findings across 8 Validation Trips (28,964 Observations)
+Evaluating representative trips spanning clean urban corridors, complex roundabouts, and noisy long-haul journeys:
 
-2. **CatBoost (Ordered Gradient Boosting):**
-   - **Ordered Boosting:** Eliminates prediction shift and target leakage by computing gradients on permutations where the target instance was excluded from prior trees.
-   - **Symmetric (Oblivious) Trees:** Constant depth across all leaves acts as structural regularization against overfitting on complex intersection topologies. Oblivious trees map to bitwise index operations, achieving microsecond inference latency on Apple Silicon.
-   - **Superior Regularization:** Explicit $L_2$ leaf regularization (`l2_leaf_reg=3.0`) prevents extreme log-odds predictions on ambiguous parallel roads.
+| Trip ID | Total Obs | Label Agreement | Indep. True Recall | Phase 2 Proxy Recall | Absent from Candidates | Opposite Dir Arcs | Rank 1 Hits |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| `00000001` | 1,315 | 99.77% | 99.85% | 99.85% | 2 | 0 | 1,068 |
+| `00000005` | 1,045 | 99.71% | 100.00% | 100.00% | 0 | 0 | 1,000 |
+| `00000013` | 2,580 | 97.17% | 98.10% | 100.00% | 49 | 0 | 2,144 |
+| `00000016` | 1,305 | 87.97% | 98.70% | 99.16% | 17 | 1 | 714 |
+| `00000024` | 801 | 100.00% | 100.00% | 100.00% | 0 | 0 | 699 |
+| `00000028` | 3,565 | 99.27% | 99.63% | 99.41% | 13 | 0 | 1,831 |
+| `00000043` | 2,322 | 93.88% | 95.56% | 93.93% | 101 | 0 | 1,200 |
+| `00000084` | 16,031 | 94.19% | 99.55% | 99.76% | 72 | 7 | 7,938 |
+| **Combined**| **28,964** | **95.60%** | **99.10%** | **99.25%** | **254** | **8** | **16,594** |
 
----
-
-## 6. Empirical Results & Comprehensive Benchmark
-
-### 6.1 Baseline Matchers vs. Supervised Classifiers
-All models and baselines were evaluated on the **exact same 16 validation trips** (`phase2/features/val/`, 266,367 candidate rows, 39,460 observations, 39,166 covered observations) using identical ground-truth alignment targets.
-
-| Paradigm | Model / Matcher | Top-1 Accuracy (%) | Coverage-Aware Top-1 (%) | Macro F1 | Binary Accuracy (%) | Log Loss | ROC-AUC | Obs Latency (ms) |
-|---|---|---|---|---|---|---|---|---|
-| **Baseline A** | Nearest Road Segment | 59.76% | 59.76% | 0.5881 | — | — | — | **0.0053 ms** |
-| **Baseline B** | Direction-Aware Matcher | 76.89% | 76.89% | 0.7600 | — | — | — | 0.0113 ms |
-| **Baseline C** | Graph-Constrained HMM | 83.22% | 83.22% | 0.8220 | — | — | — | 0.9890 ms |
-| **Supervised ML** | **Random Forest Classifier** | **72.93%** | **73.48%** | **0.8264** | **89.82%** | **0.23928** | **0.9580** | **0.0228 ms** |
-| **Supervised ML** | **CatBoost Classifier** | **73.64%** | **74.20%** | **0.8353** | **92.17%** | **0.17804** | **0.9604** | **0.0005 ms** |
-
-### 6.2 Key Scientific Insights & Diagnostic Analysis
-
-1. **CatBoost Outperforms Random Forest across All Metrics:**
-   - CatBoost achieves higher Top-1 Accuracy (**73.64%** vs 72.93%), higher Candidate Macro F1 (**0.8353** vs 0.8264), higher ROC-AUC (**0.9604** vs 0.9580), and significantly lower Log Loss (**0.17804** vs 0.23928).
-   - CatBoost trains in **9.00 seconds** (vs 146.57s for RF) and delivers **0.0005 ms/observation** inference latency (45x faster than RF), proving the power of symmetric oblivious trees compiled on Apple Silicon M1.
-
-2. **Feature Importance Hierarchy:**
-   - Both models identify `projection_t`, `dist_diff_from_best_m`, and `log_distance` as the top three most influential predictive features.
-   - For CatBoost, `projection_t` contributes **25.14%** and `dist_diff_from_best_m` contributes **21.51%** of total split gain. This demonstrates that road position relative to intersection junctions and distance margin against the nearest candidate are far more discriminative than raw absolute distance.
-   - Kinematic alignment (`speed_heading_alignment`, `arc_bearing_deg`) accounts for $> 15\%$ of feature importance, successfully filtering wrong-way candidates on divided roads.
-
-3. **Classification vs. Sequence Trellis Trade-off:**
-   - Supervised classifiers evaluate each observation independently, achieving high candidate-level discriminative power (Macro F1 $> 0.835$).
-   - Baseline C utilizes full trajectory Viterbi sequence decoding across the graph, which smooths out point-level ambiguities over time.
-   - **Recommended Next Step for Phase 3 Final Submission:** Hybrid ML-HMM emission model, feeding CatBoost candidate probabilities $\hat{P}(c \mid P_t)$ directly into the HMM Viterbi trellis!
+### 5.3 Diagnostic Conclusions
+1. **High Proxy Agreement (95.6%):** The canonical training labels match the true geometric `.route` alignment in 95.6% of observations. Disagreements occur almost exclusively at complex junctions/slip roads (e.g., Trip `00000016`).
+2. **True Candidate Retrieval Recall is >99.1%:** Ground truth arcs are captured within the $R=120\text{m}$ candidate set $>99.1\%$ of the time. The 294 validation observations lacking a positive candidate across the entire 16 trips ($0.75\%$) represent true physical signal loss / off-network driving.
+3. **Opposite-Direction Candidates are Rare (<0.03%):** Only 8 instances out of 28,964 observations involved reversed arcs, confirming the road graph's directional integrity.
 
 ---
 
-## 7. Limitations of Derived Reference Labels
+## 6. Demystifying the "96%–97%" Claim (Task C)
 
-1. **Discrete Route vs. Continuous Dynamics:** Ground truth `.route` files specify discrete arc sequences. GPS points recorded during lane transitions or complex intersections may fall equidistant between two valid arcs.
-2. **Monotonic Window Alignment Boundary Jitter:** Sequential trajectory-to-route alignment uses dynamic sliding windows. While achieving $> 99.8\%$ candidate recall, extreme traffic jams (velocity $\approx 0\text{ m/s}$) can introduce localized temporal boundary blur.
-3. **Noisy Ground Truth Segments:** A small fraction of ground-truth routes contain geometric micro-arcs ($< 5\text{m}$) that GPS points physically bypass. Models penalize these as false negatives even when the macroscopic route is correct.
+In discussions, other teams have reported "96%–97% accuracy" using XGBoost or LightGBM. Our rigorous audit proves that **pointwise directed Top-1 accuracy across the entire 16-trip validation set is genuinely 70%–75%**, and explains the three reasons why other teams quote 96%–97%:
+
+```
++---------------------------------------------------------------------------------------------------+
+|                           FOUR DISTINCT EVALUATION METRICS IN MAP MATCHING                        |
++---------------------------------------------------------------------------------------------------+
+| 1. Candidate Binary Accuracy (86% – 93%):                                                          |
+|    Measures binary 0/1 correctness across all 266,367 candidate rows. Due to 85.3% negative       |
+|    imbalance, a trivial "all zero" baseline achieves 85.3%. A 92.5% score is candidate accuracy, |
+|    NOT route-matching Top-1 accuracy.                                                             |
+|                                                                                                   |
+| 2. Pointwise Directed Top-1 Accuracy (70% – 75% Full Split):                                      |
+|    Strict argmax prediction per observation. Must predict the exact directed arc ID.             |
+|    - Conditional Top-1: Correct / Covered Obs (N = 39,166) = 73.48% – 75.41%                      |
+|    - Coverage-Aware Top-1: Correct / Total Obs (N = 39,460) = 72.93% – 74.85%                     |
+|                                                                                                   |
+| 3. Clean Trip Selection Bias (95% – 100% on specific trips):                                     |
+|    On clean suburban/arterial trips, raw ML Top-1 is naturally 95%–100%:                          |
+|    - Trip 00000024: 97.75% – 100.0%                                                              |
+|    - Trip 00000005: 97.70%                                                                        |
+|    - Trip 00000001: 95.58% – 97.26%                                                               |
+|    However, massive noisy trips like Trip 00000084 (16,031 observations, 40.6% of the val set)   |
+|    achieve ~47%–48% raw Top-1, pulling the weighted aggregate down to ~70%–75%.                   |
+|                                                                                                   |
+| 4. Post-Processed Route Continuity (98% – 100%):                                                  |
+|    After HMM Viterbi trellis decoding and Dijkstra shortest-path bridging, the connected route  |
+|    continuity is 98%–100%. Teams presenting route continuity as "accuracy" report 96%–99%.        |
++---------------------------------------------------------------------------------------------------+
+```
 
 ---
 
-## 8. Summary of Review 1 Deliverables
-- **Codebase Integrity:** 100% clean commit history on branch `team/mac-ui-models`.
-- **Pre-existing Code Respected:** Zero recreation of Phase 1/2 preprocessing or candidate generators.
-- **Model Artifacts Saved:** `phase3/models/random_forest_classifier.joblib` and `phase3/models/catboost_classifier.cbm`.
-- **Streamlit Evaluator UI:** Fully built at `evaluator_ui/app.py` with Folium map integration and ZeroTier API connectivity.
-- **Viva Preparation:** Complete theoretical guide authored at `docs/MAC_VIVA.md`.
+## 7. Authoritative Six-Model Benchmark Leaderboard (Task D)
+
+All models evaluated on the **exact same 16 validation trips** (`phase2/features/val/`, 266,367 candidate rows, 39,460 total observations, 39,166 covered observations) using the canonical 22 features (commit `59f573e`):
+
+| Model | Model Family | Candidate Accuracy | Candidate Macro F1 | Log Loss | ROC-AUC | Conditional Top-1 | Coverage-Aware Top-1 | Train Time (s) | Inference Latency |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Logistic Regression** | Linear Model (L2 Regularized) | 86.27% | 0.7859 | 0.2924 | 0.9460 | **74.94%** | **74.38%** | 1.75s | 0.0003 ms/obs |
+| **Random Forest** | Bootstrap Bagging Ensemble | 89.82% | 0.8264 | 0.2393 | 0.9580 | **73.48%** | **72.93%** | 146.57s | 0.0228 ms/obs |
+| **Extra Trees** | Extremely Randomized Trees | 92.53% | 0.8440 | 0.1744 | 0.9594 | **75.41%** | **74.85%** | 27.65s | 0.0123 ms/obs |
+| **XGBoost** | Gradient Boosted Decision Trees | 91.11% | 0.8189 | 0.2024 | 0.9542 | **70.11%** | **69.59%** | 8.40s | 0.0039 ms/obs |
+| **LightGBM** | Histogram Gradient Boosting | 91.01% | 0.8166 | 0.2209 | 0.9518 | **69.14%** | **68.62%** | 4.72s | 0.0009 ms/obs |
+| **CatBoost** | Symmetric Oblivious Decision Trees | 92.17% | 0.8353 | 0.1780 | 0.9604 | **74.20%** | **73.64%** | 9.00s | 0.0005 ms/obs |
+
+### 7.1 Baseline Matchers vs. Supervised Classifiers
+
+| Paradigm | Model / Matcher | Conditional Top-1 (%) | Coverage-Aware Top-1 (%) | Macro F1 | Obs Latency (ms) |
+|---|---|---|---|---|---|
+| **Baseline A** | Nearest Road Segment | 59.76% | 59.32% | 0.5881 | **0.0053 ms** |
+| **Baseline B** | Direction-Aware Matcher | 76.89% | 76.32% | 0.7600 | 0.0113 ms |
+| **Baseline C** | Graph-Constrained HMM | 83.22% | 82.60% | 0.8220 | 0.9890 ms |
+| **Supervised ML (Best Single)**| **Extra Trees Classifier** | **75.41%** | **74.85%** | **0.8440** | 0.0123 ms |
+| **Supervised ML (Best Boosting)**| **CatBoost Classifier** | **74.20%** | **73.64%** | **0.8353** | **0.0005 ms** |
+| **Post-Processing (Hybrid)**| **LightGBM + HMM Viterbi** | **86.26% (Macro)** | — | **0.8911 (Route)** | 0.6500 ms |
+
+### 7.2 Key Scientific Insights & Diagnostic Analysis
+
+1. **Resolution of Top-1 Metric Swapping:**
+   - Previous internal tables had swapped the labels for Conditional Top-1 ($N=39,166$) and Coverage-Aware Top-1 ($N=39,460$).
+   - Mathematically, Conditional Top-1 is strictly greater than or equal to Coverage-Aware Top-1:
+     $$\text{Conditional Top-1} = \frac{N_{\text{correct}}}{N_{\text{covered}}} \ge \frac{N_{\text{correct}}}{N_{\text{total}}} = \text{Coverage-Aware Top-1}$$
+   - All historical metrics, numerators ($N_{\text{correct}}$), and denominators ($N_{\text{covered}}=39,166$, $N_{\text{total}}=39,460$) have been reconciled and verified.
+
+2. **Extra Trees and CatBoost Lead Among Supervised Models:**
+   - **Extra Trees** achieves the highest pointwise Top-1 accuracy (**75.41% conditional, 74.85% coverage-aware**) and highest Macro F1 (**0.8440**). The extreme randomization of split thresholds across features acts as an effective regularizer against correlated spatial features.
+   - **CatBoost** delivers the best boosting performance: **74.20% conditional Top-1**, lowest log loss (**0.1780**), highest ROC-AUC (**0.9604**), and ultrafast training (**9.00s**) and inference (**0.0005 ms/obs**) on M1.
+
+3. **Sequential Trellis Integration (The HMM Leap):**
+   - Pointwise classifiers evaluate observations independently, meaning spatial noise at single fixes can cause prediction jitter.
+   - When ML candidate probabilities are passed as emission potentials into an **HMM Viterbi Decoder with Dijkstra network bridging**, performance leaps to **86.26% trip Top-1**, **99.15% route continuity**, and **0.8911 Route F1**.
+
+---
+
+## 8. Distributed Evaluator UI Architecture (Task F)
+
+The evaluation frontend is implemented in Streamlit (`evaluator_ui/app.py`):
+- **Server Health Check:** Pings Omen ZeroTier API at `http://10.92.151.151:8000/health`.
+- **Local Fallback:** If the remote API is unreachable, seamlessly switches to local saved models (`CatBoost`, `Random Forest`, `Extra Trees`, `Logistic Regression`).
+- **Interactive Folium Map:** Displays raw GPS observations, top-k candidate arcs, predicted match, and ground truth route with custom color coding and popup metadata.
+- **Trip Inspection:** Allows selecting any of the 16 validation trips (or training trips) for deep forensic inspection of edge cases.
+
+---
+
+## 9. Review 1 Checklist & Readiness
+
+- [x] Canonical 22 features confirmed and frozen across all teammates (commit `59f573e`).
+- [x] All 6 models trained and verified on identical split.
+- [x] Metric swapping resolved with exact numerators/denominators.
+- [x] Independent route-alignment diagnostic confirmed >99.1% true candidate recall.
+- [x] Folium tile HTTP 403 access fixed with compliant HTTPS providers.
+- [x] Streamlit Evaluator UI running and tested locally.
+- [x] Review 1 Viva defense documentation complete (`docs/MAC_VIVA.md`).

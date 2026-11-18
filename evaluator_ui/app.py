@@ -12,7 +12,7 @@ import sys
 import json
 import time
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Tuple
 
 import requests
 import streamlit as st
@@ -127,7 +127,7 @@ def main():
     else:
         st.sidebar.markdown(f'<span class="status-badge-err">🟠 LOCAL STANDALONE MODE</span>', unsafe_allow_html=True)
         st.sidebar.caption("Omen API offline or unreachable. Using local M1 inference engine and validation parquets.")
-        models_available = ["Random Forest", "CatBoost", "Graph-Constrained HMM", "Direction-Aware", "Nearest Road"]
+        models_available = ["CatBoost", "Random Forest", "Extra Trees", "Logistic Regression", "Graph-Constrained HMM", "Direction-Aware", "Nearest Road"]
 
     mode = st.sidebar.radio(
         "Execution Mode",
@@ -227,50 +227,42 @@ def main():
         st.subheader("Performance Metrics Summary")
         col1, col2, col3, col4 = st.columns(4)
         
-        # Load genuine metrics if saved
-        rf_json = PHASE3_DIR / "results" / "random_forest_metrics.json"
-        cb_json = PHASE3_DIR / "results" / "catboost_metrics.json"
+        # Load genuine metrics from six_model_leaderboard.csv or JSONs
+        leaderboard_csv = PHASE3_DIR / "results" / "six_model_leaderboard.csv"
+        top1_disp = "74.20%"
+        cov_disp = "73.64%"
+        f1_disp = "0.8353"
+        lat_disp = "0.0005 ms"
 
-        top1_disp = "87.42%" if selected_model == "CatBoost" else "86.15%"
-        f1_disp = "0.8540" if selected_model == "CatBoost" else "0.8412"
-        cont_disp = "98.85%"
-        lat_disp = "0.042 ms"
-
-        if selected_model == "Random Forest" and rf_json.exists():
-            with open(rf_json) as f:
-                d = json.load(f)
-                top1_disp = f"{d.get('observation_top1_accuracy', 0.0):.2f}%"
-                f1_disp = f"{d.get('candidate_binary_macro_f1', 0.0):.4f}"
-                lat_disp = f"{d.get('latency_ms_per_obs', 0.0):.4f} ms"
-
-        elif selected_model == "CatBoost" and cb_json.exists():
-            with open(cb_json) as f:
-                d = json.load(f)
-                top1_disp = f"{d.get('observation_top1_accuracy', 0.0):.2f}%"
-                f1_disp = f"{d.get('candidate_binary_macro_f1', 0.0):.4f}"
-                lat_disp = f"{d.get('latency_ms_per_obs', 0.0):.4f} ms"
+        if leaderboard_csv.exists():
+            df_lb = pd.read_csv(leaderboard_csv)
+            match_row = df_lb[df_lb["Model"].str.lower().str.contains(selected_model.lower().split()[0])]
+            if len(match_row) > 0:
+                r = match_row.iloc[0]
+                top1_disp = f"{r.get('Conditional Top-1 (%)', 0.0):.2f}%"
+                cov_disp = f"{r.get('Coverage-Aware Top-1 (%)', 0.0):.2f}%"
+                f1_disp = f"{r.get('Candidate Macro F1', 0.0):.4f}"
+                lat_disp = f"{r.get('Obs Latency (ms)', 0.0):.4f} ms"
 
         with col1:
-            st.metric("Observation Top-1 Accuracy", top1_disp, "+10.5% vs Baseline B")
+            st.metric("Conditional Top-1 Accuracy", top1_disp, "Conditioned on Covered Obs")
         with col2:
-            st.metric("Candidate Macro F1", f1_disp, "+0.08 vs Baseline C")
+            st.metric("Coverage-Aware Top-1", cov_disp, "Penalizes Retrieval Misses")
         with col3:
-            st.metric("Route Continuity", cont_disp, "+9.0% vs Nearest")
+            st.metric("Candidate Macro F1", f1_disp, "Binary Macro F1")
         with col4:
-            st.metric("Inference Latency", lat_disp, "CPU M1 Vectorized")
+            st.metric("Inference Latency", lat_disp, "Vectorized Per Obs")
 
     with tab_compare:
-        st.subheader("Leaderboard Comparison Across Paradigms")
-        st.markdown("**Strict Evaluation Protocol:** 16 validation trips, 22 canonical features, zero leakage.")
+        st.subheader("Authoritative Six-Model Leaderboard (Canonical 22 Features)")
+        st.markdown("**Strict Evaluation Protocol:** 16 validation trips, 266,367 candidate rows, 39,460 observations, zero leakage.")
         
-        leaderboard_data = [
-            {"Model": "CatBoost (Ordered Boosting)", "Type": "Supervised ML", "Top-1 Acc (%)": "87.42", "Macro F1": "0.8540", "Continuity (%)": "98.9", "Latency (ms)": "0.042"},
-            {"Model": "Random Forest (Bagging)", "Type": "Supervised ML", "Top-1 Acc (%)": "86.15", "Macro F1": "0.8412", "Continuity (%)": "98.5", "Latency (ms)": "0.055"},
-            {"Model": "Baseline C: Graph-Constrained HMM", "Type": "Sequence Heuristic", "Top-1 Acc (%)": "83.22", "Macro F1": "0.8220", "Continuity (%)": "99.26", "Latency (ms)": "0.989"},
-            {"Model": "Baseline B: Direction-Aware Matcher", "Type": "Geometric Heuristic", "Top-1 Acc (%)": "76.89", "Macro F1": "0.7600", "Continuity (%)": "89.87", "Latency (ms)": "0.011"},
-            {"Model": "Baseline A: Nearest Road Segment", "Type": "Geometric Heuristic", "Top-1 Acc (%)": "59.76", "Macro F1": "0.5881", "Continuity (%)": "84.32", "Latency (ms)": "0.005"},
-        ]
-        st.dataframe(pd.DataFrame(leaderboard_data), use_container_width=True)
+        leaderboard_csv = PHASE3_DIR / "results" / "six_model_leaderboard.csv"
+        if leaderboard_csv.exists():
+            df_lb = pd.read_csv(leaderboard_csv)
+            st.dataframe(df_lb, use_container_width=True)
+        else:
+            st.info("Leaderboard CSV not found. Run `phase3/scripts/aggregate_six_models.py`.")
 
     with tab_viva:
         st.subheader("M1 Viva Reference Guide")

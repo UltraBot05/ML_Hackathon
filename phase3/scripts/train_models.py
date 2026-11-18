@@ -22,7 +22,10 @@ import numpy as np
 import pandas as pd
 import joblib
 
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
 from sklearn.metrics import (
     accuracy_score,
     precision_score,
@@ -179,16 +182,21 @@ def compute_metrics(
 
     total_obs = len(top_candidates)
     correct_obs = int((top_candidates["is_correct"] == 1).sum())
-    obs_top1_acc = float((correct_obs / total_obs * 100.0) if total_obs > 0 else 0.0)
 
-    # Coverage-aware Top-1 Accuracy:
-    # Observations where AT LEAST ONE candidate in the candidate set was correct
+    # Coverage computation: observations where AT LEAST ONE candidate in the candidate set was correct
     obs_with_true_cand = df_eval_copy.groupby(["trip_id", "obs_index"])["is_correct"].max().reset_index()
     covered_obs_count = int((obs_with_true_cand["is_correct"] == 1).sum())
     candidate_coverage_pct = float((covered_obs_count / total_obs * 100.0) if total_obs > 0 else 0.0)
 
-    coverage_aware_top1_acc = float(
+    # Conditional Top-1: % of correct predictions among observations having at least one true candidate
+    # (denominator = covered_obs_count = 39,166)
+    conditional_top1_pct = float(
         (correct_obs / covered_obs_count * 100.0) if covered_obs_count > 0 else 0.0
+    )
+    # Coverage-Aware Top-1: % of correct predictions among ALL observations
+    # (denominator = total_obs = 39,460, penalizes candidate retrieval misses)
+    coverage_aware_top1_pct = float(
+        (correct_obs / total_obs * 100.0) if total_obs > 0 else 0.0
     )
 
     return {
@@ -202,12 +210,16 @@ def compute_metrics(
         "log_loss": round(loss, 5),
         "roc_auc": round(roc_auc, 4),
         "pr_auc": round(pr_auc, 4),
-        "observation_top1_accuracy": round(obs_top1_acc, 2),
-        "coverage_aware_top1_accuracy": round(coverage_aware_top1_acc, 2),
+        "conditional_top1_accuracy": round(conditional_top1_pct, 2),
+        "coverage_aware_top1_accuracy": round(coverage_aware_top1_pct, 2),
+        "top1_conditional": round(conditional_top1_pct / 100.0, 6),
+        "top1_coverage_aware": round(coverage_aware_top1_pct / 100.0, 6),
+        "observation_top1_accuracy": round(coverage_aware_top1_pct, 2),
         "candidate_coverage_pct": round(candidate_coverage_pct, 2),
         "total_observations": total_obs,
         "correct_observations": correct_obs,
         "covered_observations": covered_obs_count,
+        "observations_without_positive": total_obs - covered_obs_count,
         "total_candidates": len(y_true),
     }
 
@@ -368,10 +380,155 @@ def train_catboost(
     return metrics
 
 
+def train_logistic_regression(
+    X_train: np.ndarray,
+    y_train: np.ndarray,
+    X_val: np.ndarray,
+    y_val: np.ndarray,
+    df_val: pd.DataFrame,
+) -> Dict[str, Any]:
+    """
+    Trains and benchmarks Logistic Regression with StandardScaler.
+    Hyperparameters strictly aligned with Omen canonical spec:
+    C=1.0, solver='lbfgs', class_weight='balanced', max_iter=1000, random_state=42.
+    """
+    hyperparameters = {
+        "C": 1.0,
+        "solver": "lbfgs",
+        "class_weight": "balanced",
+        "max_iter": 1000,
+        "random_state": 42,
+    }
+    logger.info(f"--- Training Logistic Regression Classifier ---")
+    logger.info(f"Hyperparameters: {hyperparameters}")
+
+    model = make_pipeline(StandardScaler(), LogisticRegression(**hyperparameters))
+
+    # Measure training time
+    t0 = time.perf_counter()
+    model.fit(X_train, y_train)
+    train_time_sec = time.perf_counter() - t0
+    logger.info(f"Logistic Regression training completed in {train_time_sec:.2f} seconds.")
+
+    # Measure inference time
+    t1 = time.perf_counter()
+    y_prob = model.predict_proba(X_val)[:, 1]
+    infer_time_sec = time.perf_counter() - t1
+    infer_latency_ms_per_cand = (infer_time_sec / len(X_val)) * 1000.0
+    num_obs = len(df_val.groupby(["trip_id", "obs_index"]))
+    infer_latency_ms_per_obs = (infer_time_sec / num_obs) * 1000.0 if num_obs > 0 else 0.0
+
+    logger.info(f"Logistic Regression inference on {len(X_val)} candidates ({num_obs} obs) completed in {infer_time_sec:.3f} s.")
+    logger.info(f"Latency: {infer_latency_ms_per_obs:.4f} ms/observation, {infer_latency_ms_per_cand:.5f} ms/candidate.")
+
+    # Compute metrics
+    metrics = compute_metrics(y_val, y_prob, df_val)
+    metrics["model_name"] = "Logistic Regression"
+    metrics["model_family"] = "Linear Generalized Linear Model"
+    metrics["hyperparameters"] = hyperparameters
+    metrics["train_time_sec"] = round(train_time_sec, 2)
+    metrics["infer_time_sec"] = round(infer_time_sec, 3)
+    metrics["latency_ms_per_obs"] = round(infer_latency_ms_per_obs, 4)
+    metrics["latency_ms_per_cand"] = round(infer_latency_ms_per_cand, 5)
+
+    # Feature coefficients
+    lr_step = model.named_steps["logisticregression"]
+    coefs = lr_step.coef_[0]
+    feat_coef = sorted(zip(FEATURE_COLUMNS, coefs), key=lambda x: abs(x[1]), reverse=True)
+    metrics["feature_coefficients"] = {k: round(float(v), 5) for k, v in feat_coef}
+
+    # Save model artifact
+    model_path = MODELS_DIR / "logistic_regression_classifier.joblib"
+    joblib.dump(model, model_path, compress=3)
+    logger.info(f"Saved Logistic Regression artifact to {model_path}.")
+    metrics["saved_artifact"] = str(model_path.relative_to(PROJECT_ROOT))
+
+    # Save metrics JSON
+    json_path = RESULTS_DIR / "logistic_regression_metrics.json"
+    with open(json_path, "w") as f:
+        json.dump(metrics, f, indent=2)
+    logger.info(f"Saved Logistic Regression metrics to {json_path}")
+
+    return metrics
+
+
+def train_extra_trees(
+    X_train: np.ndarray,
+    y_train: np.ndarray,
+    X_val: np.ndarray,
+    y_val: np.ndarray,
+    df_val: pd.DataFrame,
+) -> Dict[str, Any]:
+    """
+    Trains and benchmarks ExtraTreesClassifier.
+    Hyperparameters strictly aligned with Adarsh canonical spec:
+    n_estimators=100, max_depth=16, min_samples_leaf=20, max_features='sqrt', bootstrap=False, n_jobs=-1, random_state=42.
+    """
+    hyperparameters = {
+        "n_estimators": 100,
+        "max_depth": 16,
+        "min_samples_leaf": 20,
+        "max_features": "sqrt",
+        "bootstrap": False,
+        "n_jobs": -1,
+        "random_state": 42,
+    }
+    logger.info(f"--- Training Extra Trees Classifier ---")
+    logger.info(f"Hyperparameters: {hyperparameters}")
+
+    et = ExtraTreesClassifier(**hyperparameters)
+
+    # Measure training time
+    t0 = time.perf_counter()
+    et.fit(X_train, y_train)
+    train_time_sec = time.perf_counter() - t0
+    logger.info(f"Extra Trees training completed in {train_time_sec:.2f} seconds.")
+
+    # Measure inference time
+    t1 = time.perf_counter()
+    y_prob = et.predict_proba(X_val)[:, 1]
+    infer_time_sec = time.perf_counter() - t1
+    infer_latency_ms_per_cand = (infer_time_sec / len(X_val)) * 1000.0
+    num_obs = len(df_val.groupby(["trip_id", "obs_index"]))
+    infer_latency_ms_per_obs = (infer_time_sec / num_obs) * 1000.0 if num_obs > 0 else 0.0
+
+    logger.info(f"Extra Trees inference on {len(X_val)} candidates ({num_obs} obs) completed in {infer_time_sec:.3f} s.")
+    logger.info(f"Latency: {infer_latency_ms_per_obs:.4f} ms/observation, {infer_latency_ms_per_cand:.5f} ms/candidate.")
+
+    # Compute metrics
+    metrics = compute_metrics(y_val, y_prob, df_val)
+    metrics["model_name"] = "Extra Trees"
+    metrics["model_family"] = "Extremely Randomized Trees Ensemble"
+    metrics["hyperparameters"] = hyperparameters
+    metrics["train_time_sec"] = round(train_time_sec, 2)
+    metrics["infer_time_sec"] = round(infer_time_sec, 3)
+    metrics["latency_ms_per_obs"] = round(infer_latency_ms_per_obs, 4)
+    metrics["latency_ms_per_cand"] = round(infer_latency_ms_per_cand, 5)
+
+    # Feature importances
+    importances = et.feature_importances_
+    feat_imp = sorted(zip(FEATURE_COLUMNS, importances), key=lambda x: x[1], reverse=True)
+    metrics["feature_importances"] = {k: round(float(v), 5) for k, v in feat_imp}
+
+    # Save model artifact
+    model_path = MODELS_DIR / "extra_trees_classifier.joblib"
+    joblib.dump(et, model_path, compress=3)
+    logger.info(f"Saved Extra Trees model artifact to {model_path}.")
+    metrics["saved_artifact"] = str(model_path.relative_to(PROJECT_ROOT))
+
+    # Save metrics JSON
+    json_path = RESULTS_DIR / "extra_trees_metrics.json"
+    with open(json_path, "w") as f:
+        json.dump(metrics, f, indent=2)
+    logger.info(f"Saved Extra Trees metrics to {json_path}")
+
+    return metrics
+
+
 def main():
-    parser = argparse.ArgumentParser(description="Train Random Forest and CatBoost on PathSnap Phase 2 features.")
-    parser.add_argument("--model", type=str, choices=["rf", "catboost", "all"], default="all",
-                        help="Which model to train: rf, catboost, or all.")
+    parser = argparse.ArgumentParser(description="Train and benchmark PathSnap supervised models on Phase 2 features.")
+    parser.add_argument("--model", type=str, choices=["rf", "catboost", "lr", "et", "all", "coordinated"], default="coordinated",
+                        help="Which model to train: rf, catboost, lr, et, coordinated (lr+rf+et+cb), or all.")
     parser.add_argument("--sample", type=int, default=None,
                         help="Optional limit on number of trips loaded for fast testing.")
     args = parser.parse_args()
@@ -396,34 +553,58 @@ def main():
 
     results = {}
 
+    # Load existing metrics for RF and CatBoost if available
+    rf_json = RESULTS_DIR / "random_forest_metrics.json"
+    cb_json = RESULTS_DIR / "catboost_metrics.json"
+    if rf_json.exists():
+        with open(rf_json) as f:
+            results["Random Forest"] = json.load(f)
+    if cb_json.exists():
+        with open(cb_json) as f:
+            results["CatBoost"] = json.load(f)
+
+    if args.model in ("lr", "coordinated", "all"):
+        lr_metrics = train_logistic_regression(X_train, y_train, X_val, y_val, df_val)
+        results["Logistic Regression"] = lr_metrics
+
     if args.model in ("rf", "all"):
         rf_metrics = train_random_forest(X_train, y_train, X_val, y_val, df_val)
         results["Random Forest"] = rf_metrics
+
+    if args.model in ("et", "coordinated", "all"):
+        et_metrics = train_extra_trees(X_train, y_train, X_val, y_val, df_val)
+        results["Extra Trees"] = et_metrics
 
     if args.model in ("catboost", "all"):
         cb_metrics = train_catboost(X_train, y_train, X_val, y_val, df_val)
         results["CatBoost"] = cb_metrics
 
-    # Produce comparison summary table
+    # Produce comparison summary table for coordinated models
     summary_rows = []
     for model_name, m in results.items():
+        correct = m.get("correct_observations", 0)
+        total = m.get("total_observations", 39460)
+        covered = m.get("covered_observations", 39166)
+        cond_top1 = round((correct / covered * 100.0), 2) if covered > 0 else 0.0
+        cov_top1 = round((correct / total * 100.0), 2) if total > 0 else 0.0
+
         summary_rows.append({
             "Model": model_name,
-            "Observation Top-1 (%)": m["observation_top1_accuracy"],
-            "Coverage-Aware Top-1 (%)": m["coverage_aware_top1_accuracy"],
-            "Candidate Macro F1": m["candidate_binary_macro_f1"],
-            "Candidate Accuracy (%)": m["candidate_binary_accuracy"],
-            "Log Loss": m["log_loss"],
-            "ROC-AUC": m["roc_auc"],
-            "Train Time (s)": m["train_time_sec"],
-            "Obs Latency (ms)": m["latency_ms_per_obs"],
+            "Conditional Top-1 (%)": cond_top1,
+            "Coverage-Aware Top-1 (%)": cov_top1,
+            "Candidate Macro F1": m.get("candidate_binary_macro_f1"),
+            "Candidate Accuracy (%)": m.get("candidate_binary_accuracy"),
+            "Log Loss": m.get("log_loss"),
+            "ROC-AUC": m.get("roc_auc"),
+            "Train Time (s)": m.get("train_time_sec"),
+            "Obs Latency (ms)": m.get("latency_ms_per_obs"),
         })
 
     summary_df = pd.DataFrame(summary_rows)
-    summary_csv = RESULTS_DIR / "my_models_benchmark_summary.csv"
+    summary_csv = RESULTS_DIR / "coordinated_models_benchmark_summary.csv"
     summary_df.to_csv(summary_csv, index=False)
     logger.info("\n" + summary_df.to_string(index=False))
-    logger.info(f"Benchmark summary saved to {summary_csv}")
+    logger.info(f"Coordinated benchmark summary saved to {summary_csv}")
 
 
 if __name__ == "__main__":
